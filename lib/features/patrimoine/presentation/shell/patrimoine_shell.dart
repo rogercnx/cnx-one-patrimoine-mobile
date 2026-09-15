@@ -3,15 +3,17 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../theme/app_colors.dart';
 
-/// Coquille commune aux 3 onglets (Accueil, Scanner, Historique) : bottom
-/// navigation bar avec le bouton Scanner mis en avant, comme dans le design
-/// de référence (`nav` du prototype).
+/// Coquille commune aux 4 onglets (Accueil, Scanner, Historique, Profil) :
+/// bottom navigation bar avec le bouton Scanner mis en avant, comme dans le
+/// design de référence (`nav` du prototype). Le 4ème onglet (Profil) relève
+/// du module Auth, pas de Patrimoine — cette coquille reste le point
+/// d'assemblage commun de la navigation applicative.
 class PatrimoineShell extends StatelessWidget {
   const PatrimoineShell({super.key, required this.child});
 
   final Widget child;
 
-  static const _tabs = ['/accueil', '/scanner', '/historique'];
+  static const _tabs = ['/accueil', '/scanner', '/historique', '/profil'];
 
   int _indexPour(String location) {
     final i = _tabs.indexWhere((t) => location.startsWith(t));
@@ -38,6 +40,7 @@ class PatrimoineShell extends StatelessWidget {
                 _TabButton(icon: Icons.home_rounded, label: 'Accueil', selected: index == 0, onTap: () => context.go('/accueil')),
                 _ScanButton(selected: index == 1, onTap: () => context.go('/scanner')),
                 _TabButton(icon: Icons.history_rounded, label: 'Historique', selected: index == 2, onTap: () => context.go('/historique')),
+                _TabButton(icon: Icons.person_rounded, label: 'Profil', selected: index == 3, onTap: () => context.go('/profil')),
               ],
             ),
           ),

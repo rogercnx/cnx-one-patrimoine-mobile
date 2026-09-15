@@ -47,6 +47,14 @@ final class NotFoundException extends AppException {
   const NotFoundException(super.message);
 }
 
+/// Le backend réclame un code 2FA pour terminer la connexion (compte à
+/// double authentification activée). Distinct de [UnauthorizedException]
+/// pour que l'écran de login sache afficher le champ code plutôt qu'une
+/// simple erreur.
+final class TwoFactorRequiredException extends AppException {
+  const TwoFactorRequiredException() : super('Code de vérification à deux facteurs requis.');
+}
+
 /// Déballe un [Result] : renvoie la donnée en cas de succès, relance
 /// l'[AppException] sinon — pour laisser `FutureProvider`/`AsyncNotifier`
 /// capturer nativement l'échec dans un `AsyncValue.error`.
