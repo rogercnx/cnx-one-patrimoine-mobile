@@ -9,6 +9,17 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    # Faux positif connu de l'analyzer avec `@JsonKey(name: ...)` placé
+    # directement sur un paramètre de `const factory` freezed (idiome
+    # documenté par freezed) — voir la FAQ freezed sur ce warning.
+    invalid_annotation_target: ignore
+  exclude:
+    # Code généré (freezed/json_serializable) — pas de notre style à corriger.
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`

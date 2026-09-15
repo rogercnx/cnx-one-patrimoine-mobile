@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/format/app_format.dart';
 import '../../../../theme/app_colors.dart';
+import '../../data/models/comptage_input_model.dart';
 import '../../data/models/comptage_model.dart';
 import '../../data/models/immobilisation_enums.dart';
 import '../../data/models/immobilisation_model.dart';
+import '../../data/models/patrimoine_enums.dart';
 import '../../data/models/site_model.dart';
 import '../patrimoine_providers.dart';
 import '../shared/async_state_views.dart';
@@ -38,51 +40,44 @@ class _FicheDetailScreenState extends ConsumerState<FicheDetailScreen> {
   }
 
   void _initSiNecessaire(ImmobilisationModel immo, ComptageModel? deja) {
-    _etat ??= deja?.modification?.etat ?? immo.etat;
-    _siteId ??= deja?.modification?.siteId ?? immo.siteId;
-    _local ??= deja?.modification?.local ?? immo.local;
-    _affectataire ??= deja?.modification?.affectataire ?? immo.affectataire;
+    // `?? ''` : site/local/affectataire peuvent être `null` côté API réelle
+    // (immobilisation générée depuis un dossier minimal, sans ces champs
+    // renseignés) — évite un `!` sur `null` juste après. Pas de champ
+    // "local" dans le vrai comptage (seul `site_constate` existe côté
+    // backend) : `_local` s'initialise uniquement depuis la fiche.
+    _etat ??= deja?.etatConstate ?? immo.etat;
+    _siteId ??= deja?.siteConstate ?? immo.siteId ?? '';
+    _local ??= immo.local ?? '';
+    _affectataire ??= deja?.affectataireConstate ?? immo.affectataire ?? '';
   }
 
-  Future<void> _valider(ImmobilisationModel immo, {ResultatComptage? force}) async {
+  Future<void> _valider(ImmobilisationModel immo, {ResultatInventaire? force}) async {
     final etatChange = _etat != immo.etat;
-    final lieuChange = _siteId != immo.siteId || _local != immo.local;
+    final lieuChange = _siteId != immo.siteId; // "local" non transmis : pas de champ backend confirmé.
     final affectChange = _affectataire != immo.affectataire;
+    final aUnEcart = etatChange || lieuChange || affectChange;
 
-    final resultat = force ??
-        (etatChange
-            ? ResultatComptage.etat
-            : lieuChange
-                ? ResultatComptage.lieu
-                : affectChange
-                    ? ResultatComptage.affect
-                    : ResultatComptage.ok);
+    final resultat = force ?? (aUnEcart ? ResultatInventaire.ecart : ResultatInventaire.ok);
 
-    final modification = ComptageModification(
-      etat: etatChange ? _etat : null,
-      siteId: lieuChange ? _siteId : null,
-      local: lieuChange ? _local : null,
-      affectataire: affectChange ? _affectataire : null,
+    final input = ComptageInput(
+      immobilisationId: immo.id,
+      resultat: resultat,
+      etatConstate: etatChange ? _etat : null,
+      siteConstate: lieuChange ? _siteId : null,
+      affectataireConstate: affectChange ? _affectataire : null,
+      note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
     );
-    final aUneModification = modification.etat != null || modification.siteId != null || modification.affectataire != null;
 
     setState(() => _envoi = true);
     try {
-      await ref.read(comptagesSessionProvider.notifier).valider(ComptageModel(
-            immobilisationId: immo.id,
-            resultat: resultat,
-            dateHeure: DateTime.now(),
-            agentNom: (await ref.read(patrimoineRegistryProvider.future)).agent.nom,
-            note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
-            modification: aUneModification ? modification : null,
-          ));
+      await ref.read(comptagesSessionProvider.notifier).valider(input);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(
-          resultat == ResultatComptage.ok
-              ? 'Présence confirmée'
-              : resultat == ResultatComptage.introuvable
-                  ? 'Bien signalé introuvable'
-                  : 'Écart enregistré',
+          switch (resultat) {
+            ResultatInventaire.ok => 'Présence confirmée',
+            ResultatInventaire.introuvable => 'Bien signalé introuvable',
+            ResultatInventaire.ecart => 'Écart enregistré',
+          },
         )));
         Navigator.of(context).maybePop();
       }
@@ -128,7 +123,7 @@ class _FicheDetailScreenState extends ConsumerState<FicheDetailScreen> {
                   }),
                   onAffectataireChange: (v) => setState(() => _affectataire = v),
                   onValider: () => _valider(immo),
-                  onIntrouvable: () => _valider(immo, force: ResultatComptage.introuvable),
+                  onIntrouvable: () => _valider(immo, force: ResultatInventaire.introuvable),
                 );
               },
             ),
@@ -294,10 +289,10 @@ class _FicheBody extends ConsumerWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   childAspectRatio: 2.5,
                   children: [
-                    _FicheCell('Compte', immo.compteComptable),
-                    _FicheCell('Fournisseur', immo.fournisseur),
+                    _FicheCell('Compte', immo.compteComptable ?? '—'),
+                    _FicheCell('Fournisseur', immo.fournisseur ?? '—'),
                     _FicheCell('Acquisition', AppFormat.date(immo.dateAcquisition)),
-                    _FicheCell("Valeur d'acquisition", AppFormat.fcfa(immo.valeurAcquisition)),
+                    _FicheCell("Valeur d'acquisition", AppFormat.fcfa(immo.valeurAcquisition ?? 0)),
                     _FicheCell('Amortissement', AppFormat.fcfa(immo.montantAmorti)),
                     _FicheCell('Valeur nette', AppFormat.fcfa(vnc)),
                     _FicheCell('Mise en service', AppFormat.date(immo.dateMiseService)),
@@ -457,80 +452,90 @@ class _FicheBody extends ConsumerWidget {
     );
   }
 
+  // Site : dropdown (liste réelle, `GET /patrimoine/sites`). Local : saisie
+  // libre — aucun endpoint réel ne propose de liste de locaux par site
+  // (décision produit actée, CLAUDE.md section 4).
   Future<void> _choisirLieu(BuildContext context, WidgetRef ref) async {
     var siteChoisi = siteId;
+    final localController = TextEditingController(text: local);
     await showAppBottomSheet(
       context: context,
       title: 'Emplacement',
       subtitle: 'Site et local où le bien a été trouvé',
       child: StatefulBuilder(
-        builder: (context, setSheetState) {
-          final locauxAsync = ref.watch(locauxDuSiteProvider(siteChoisi));
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<String>(
-                initialValue: siteChoisi,
-                decoration: _dropdownDecoration(),
-                items: [for (final s in sites) DropdownMenuItem(value: s.id, child: Text(s.nom))],
-                onChanged: (v) => setSheetState(() => siteChoisi = v!),
+        builder: (context, setSheetState) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField<String>(
+              initialValue: siteChoisi,
+              decoration: _dropdownDecoration(),
+              items: [for (final s in sites) DropdownMenuItem(value: s.id, child: Text(s.nom))],
+              onChanged: (v) => setSheetState(() => siteChoisi = v!),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: localController,
+              decoration: InputDecoration(
+                labelText: 'Local (facultatif)',
+                hintText: 'Ex. Étage 3 — DSI',
+                filled: true,
+                fillColor: AppColors.card,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.line)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.line)),
               ),
-              const SizedBox(height: 14),
-              locauxAsync.when(
-                loading: () => const Padding(padding: EdgeInsets.all(12), child: LinearProgressIndicator()),
-                error: (e, st) => const SizedBox.shrink(),
-                data: (locaux) {
-                  final options = {local, ...locaux}.toList();
-                  var localChoisi = options.contains(local) ? local : options.first;
-                  return StatefulBuilder(
-                    builder: (context, setLocalState) => Column(
-                      children: [
-                        DropdownButtonFormField<String>(
-                          initialValue: localChoisi,
-                          decoration: _dropdownDecoration(),
-                          items: [for (final l in options) DropdownMenuItem(value: l, child: Text(l))],
-                          onChanged: (v) => setLocalState(() => localChoisi = v!),
-                        ),
-                        const SizedBox(height: 16),
-                        PrimaryButton(
-                          label: "Appliquer l'emplacement",
-                          onPressed: () {
-                            onLieuChange(siteChoisi, localChoisi);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        },
+            ),
+            const SizedBox(height: 16),
+            PrimaryButton(
+              label: "Appliquer l'emplacement",
+              onPressed: () {
+                onLieuChange(siteChoisi, localController.text.trim());
+                Navigator.of(context).pop();
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
+    localController.dispose();
   }
 
+  // Saisie libre : aucun endpoint réel ne propose de liste de détenteurs
+  // possibles (décision produit actée, CLAUDE.md section 4).
   Future<void> _choisirAffectataire(BuildContext context, WidgetRef ref) async {
-    final result = await ref.read(affectatairesPossiblesProvider.future);
-    final options = {affectataire, ...result}.toList();
-    if (!context.mounted) return;
+    final controller = TextEditingController(text: affectataire);
     await showAppBottomSheet(
       context: context,
       title: 'Affectation',
       subtitle: 'Détenteur responsable du bien',
-      child: OptionPicker(
-        value: affectataire,
-        options: [
-          for (final a in options) (id: a, label: a, sub: a == immo.affectataire ? 'affectation actuelle' : null, tag: null),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: 'Nouveau détenteur',
+              filled: true,
+              fillColor: AppColors.card,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.line)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.line)),
+            ),
+          ),
+          const SizedBox(height: 16),
+          PrimaryButton(
+            label: "Appliquer l'affectation",
+            onPressed: () {
+              onAffectataireChange(controller.text.trim());
+              Navigator.of(context).pop();
+            },
+          ),
+          const SizedBox(height: 8),
         ],
-        onChanged: (id) {
-          onAffectataireChange(id);
-          Navigator.of(context).pop();
-        },
       ),
     );
+    controller.dispose();
   }
 
   InputDecoration _dropdownDecoration() => InputDecoration(

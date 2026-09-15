@@ -25,25 +25,44 @@ mixin _$ImmobilisationModel {
   String get code => throw _privateConstructorUsedError;
   String get designation => throw _privateConstructorUsedError;
   String get categorie => throw _privateConstructorUsedError;
-  String get compteComptable => throw _privateConstructorUsedError;
+  @JsonKey(name: 'compte_comptable')
+  String? get compteComptable => throw _privateConstructorUsedError;
   FamilleImmobilisation get famille => throw _privateConstructorUsedError;
-  String get siteId => throw _privateConstructorUsedError;
-  String get local => throw _privateConstructorUsedError;
-  String get affectataire => throw _privateConstructorUsedError;
+  @JsonKey(name: 'site_id')
+  String? get siteId => throw _privateConstructorUsedError;
+  String? get local => throw _privateConstructorUsedError;
+  String? get affectataire => throw _privateConstructorUsedError;
   StatutBien get statut => throw _privateConstructorUsedError;
   EtatBien get etat => throw _privateConstructorUsedError;
-  String get fournisseur => throw _privateConstructorUsedError;
-  String get bonCommandeRef => throw _privateConstructorUsedError;
+  String? get fournisseur => throw _privateConstructorUsedError;
+  @JsonKey(name: 'bon_commande_ref')
+  String? get bonCommandeRef => throw _privateConstructorUsedError;
+  @JsonKey(name: 'facture_ref')
   String? get factureRef => throw _privateConstructorUsedError;
+  @JsonKey(name: 'date_acquisition')
   DateTime get dateAcquisition => throw _privateConstructorUsedError;
-  double get valeurAcquisition => throw _privateConstructorUsedError;
+  @JsonKey(name: 'valeur_acquisition', fromJson: parseFlexibleDoubleNullable)
+  double? get valeurAcquisition => throw _privateConstructorUsedError;
+  @JsonKey(name: 'date_mise_service')
   DateTime? get dateMiseService => throw _privateConstructorUsedError;
+  @JsonKey(name: 'duree_amortissement')
   int get dureeAmortissement => throw _privateConstructorUsedError;
+  @JsonKey(name: 'methode_amortissement')
   MethodeAmortissement get methodeAmortissement =>
       throw _privateConstructorUsedError;
+  @JsonKey(name: 'montant_amorti', fromJson: parseFlexibleDouble)
   double get montantAmorti => throw _privateConstructorUsedError;
+  @JsonKey(name: 'date_dernier_inventaire')
   DateTime? get dateDernierInventaire => throw _privateConstructorUsedError;
+  @JsonKey(name: 'sortie_ref')
   String? get sortieRef => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt => throw _privateConstructorUsedError; // Additives (chantier web organisation, même table partagée) — nullable.
+  String? get departement => throw _privateConstructorUsedError;
+  @JsonKey(name: 'dossier_id')
+  String? get dossierId => throw _privateConstructorUsedError; // Composition app, absents de la vraie réponse — voir doc de classe.
   List<EntretienModel> get entretiens => throw _privateConstructorUsedError;
   List<AttributionModel> get attributions => throw _privateConstructorUsedError;
   List<PhotoModel> get photos => throw _privateConstructorUsedError;
@@ -70,24 +89,31 @@ abstract class $ImmobilisationModelCopyWith<$Res> {
     String code,
     String designation,
     String categorie,
-    String compteComptable,
+    @JsonKey(name: 'compte_comptable') String? compteComptable,
     FamilleImmobilisation famille,
-    String siteId,
-    String local,
-    String affectataire,
+    @JsonKey(name: 'site_id') String? siteId,
+    String? local,
+    String? affectataire,
     StatutBien statut,
     EtatBien etat,
-    String fournisseur,
-    String bonCommandeRef,
-    String? factureRef,
-    DateTime dateAcquisition,
-    double valeurAcquisition,
-    DateTime? dateMiseService,
-    int dureeAmortissement,
+    String? fournisseur,
+    @JsonKey(name: 'bon_commande_ref') String? bonCommandeRef,
+    @JsonKey(name: 'facture_ref') String? factureRef,
+    @JsonKey(name: 'date_acquisition') DateTime dateAcquisition,
+    @JsonKey(name: 'valeur_acquisition', fromJson: parseFlexibleDoubleNullable)
+    double? valeurAcquisition,
+    @JsonKey(name: 'date_mise_service') DateTime? dateMiseService,
+    @JsonKey(name: 'duree_amortissement') int dureeAmortissement,
+    @JsonKey(name: 'methode_amortissement')
     MethodeAmortissement methodeAmortissement,
+    @JsonKey(name: 'montant_amorti', fromJson: parseFlexibleDouble)
     double montantAmorti,
-    DateTime? dateDernierInventaire,
-    String? sortieRef,
+    @JsonKey(name: 'date_dernier_inventaire') DateTime? dateDernierInventaire,
+    @JsonKey(name: 'sortie_ref') String? sortieRef,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    String? departement,
+    @JsonKey(name: 'dossier_id') String? dossierId,
     List<EntretienModel> entretiens,
     List<AttributionModel> attributions,
     List<PhotoModel> photos,
@@ -113,24 +139,28 @@ class _$ImmobilisationModelCopyWithImpl<$Res, $Val extends ImmobilisationModel>
     Object? code = null,
     Object? designation = null,
     Object? categorie = null,
-    Object? compteComptable = null,
+    Object? compteComptable = freezed,
     Object? famille = null,
-    Object? siteId = null,
-    Object? local = null,
-    Object? affectataire = null,
+    Object? siteId = freezed,
+    Object? local = freezed,
+    Object? affectataire = freezed,
     Object? statut = null,
     Object? etat = null,
-    Object? fournisseur = null,
-    Object? bonCommandeRef = null,
+    Object? fournisseur = freezed,
+    Object? bonCommandeRef = freezed,
     Object? factureRef = freezed,
     Object? dateAcquisition = null,
-    Object? valeurAcquisition = null,
+    Object? valeurAcquisition = freezed,
     Object? dateMiseService = freezed,
     Object? dureeAmortissement = null,
     Object? methodeAmortissement = null,
     Object? montantAmorti = null,
     Object? dateDernierInventaire = freezed,
     Object? sortieRef = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+    Object? departement = freezed,
+    Object? dossierId = freezed,
     Object? entretiens = null,
     Object? attributions = null,
     Object? photos = null,
@@ -153,26 +183,26 @@ class _$ImmobilisationModelCopyWithImpl<$Res, $Val extends ImmobilisationModel>
                 ? _value.categorie
                 : categorie // ignore: cast_nullable_to_non_nullable
                       as String,
-            compteComptable: null == compteComptable
+            compteComptable: freezed == compteComptable
                 ? _value.compteComptable
                 : compteComptable // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             famille: null == famille
                 ? _value.famille
                 : famille // ignore: cast_nullable_to_non_nullable
                       as FamilleImmobilisation,
-            siteId: null == siteId
+            siteId: freezed == siteId
                 ? _value.siteId
                 : siteId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            local: null == local
+                      as String?,
+            local: freezed == local
                 ? _value.local
                 : local // ignore: cast_nullable_to_non_nullable
-                      as String,
-            affectataire: null == affectataire
+                      as String?,
+            affectataire: freezed == affectataire
                 ? _value.affectataire
                 : affectataire // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             statut: null == statut
                 ? _value.statut
                 : statut // ignore: cast_nullable_to_non_nullable
@@ -181,14 +211,14 @@ class _$ImmobilisationModelCopyWithImpl<$Res, $Val extends ImmobilisationModel>
                 ? _value.etat
                 : etat // ignore: cast_nullable_to_non_nullable
                       as EtatBien,
-            fournisseur: null == fournisseur
+            fournisseur: freezed == fournisseur
                 ? _value.fournisseur
                 : fournisseur // ignore: cast_nullable_to_non_nullable
-                      as String,
-            bonCommandeRef: null == bonCommandeRef
+                      as String?,
+            bonCommandeRef: freezed == bonCommandeRef
                 ? _value.bonCommandeRef
                 : bonCommandeRef // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             factureRef: freezed == factureRef
                 ? _value.factureRef
                 : factureRef // ignore: cast_nullable_to_non_nullable
@@ -197,10 +227,10 @@ class _$ImmobilisationModelCopyWithImpl<$Res, $Val extends ImmobilisationModel>
                 ? _value.dateAcquisition
                 : dateAcquisition // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            valeurAcquisition: null == valeurAcquisition
+            valeurAcquisition: freezed == valeurAcquisition
                 ? _value.valeurAcquisition
                 : valeurAcquisition // ignore: cast_nullable_to_non_nullable
-                      as double,
+                      as double?,
             dateMiseService: freezed == dateMiseService
                 ? _value.dateMiseService
                 : dateMiseService // ignore: cast_nullable_to_non_nullable
@@ -224,6 +254,22 @@ class _$ImmobilisationModelCopyWithImpl<$Res, $Val extends ImmobilisationModel>
             sortieRef: freezed == sortieRef
                 ? _value.sortieRef
                 : sortieRef // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            departement: freezed == departement
+                ? _value.departement
+                : departement // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            dossierId: freezed == dossierId
+                ? _value.dossierId
+                : dossierId // ignore: cast_nullable_to_non_nullable
                       as String?,
             entretiens: null == entretiens
                 ? _value.entretiens
@@ -257,24 +303,31 @@ abstract class _$$ImmobilisationModelImplCopyWith<$Res>
     String code,
     String designation,
     String categorie,
-    String compteComptable,
+    @JsonKey(name: 'compte_comptable') String? compteComptable,
     FamilleImmobilisation famille,
-    String siteId,
-    String local,
-    String affectataire,
+    @JsonKey(name: 'site_id') String? siteId,
+    String? local,
+    String? affectataire,
     StatutBien statut,
     EtatBien etat,
-    String fournisseur,
-    String bonCommandeRef,
-    String? factureRef,
-    DateTime dateAcquisition,
-    double valeurAcquisition,
-    DateTime? dateMiseService,
-    int dureeAmortissement,
+    String? fournisseur,
+    @JsonKey(name: 'bon_commande_ref') String? bonCommandeRef,
+    @JsonKey(name: 'facture_ref') String? factureRef,
+    @JsonKey(name: 'date_acquisition') DateTime dateAcquisition,
+    @JsonKey(name: 'valeur_acquisition', fromJson: parseFlexibleDoubleNullable)
+    double? valeurAcquisition,
+    @JsonKey(name: 'date_mise_service') DateTime? dateMiseService,
+    @JsonKey(name: 'duree_amortissement') int dureeAmortissement,
+    @JsonKey(name: 'methode_amortissement')
     MethodeAmortissement methodeAmortissement,
+    @JsonKey(name: 'montant_amorti', fromJson: parseFlexibleDouble)
     double montantAmorti,
-    DateTime? dateDernierInventaire,
-    String? sortieRef,
+    @JsonKey(name: 'date_dernier_inventaire') DateTime? dateDernierInventaire,
+    @JsonKey(name: 'sortie_ref') String? sortieRef,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    String? departement,
+    @JsonKey(name: 'dossier_id') String? dossierId,
     List<EntretienModel> entretiens,
     List<AttributionModel> attributions,
     List<PhotoModel> photos,
@@ -299,24 +352,28 @@ class __$$ImmobilisationModelImplCopyWithImpl<$Res>
     Object? code = null,
     Object? designation = null,
     Object? categorie = null,
-    Object? compteComptable = null,
+    Object? compteComptable = freezed,
     Object? famille = null,
-    Object? siteId = null,
-    Object? local = null,
-    Object? affectataire = null,
+    Object? siteId = freezed,
+    Object? local = freezed,
+    Object? affectataire = freezed,
     Object? statut = null,
     Object? etat = null,
-    Object? fournisseur = null,
-    Object? bonCommandeRef = null,
+    Object? fournisseur = freezed,
+    Object? bonCommandeRef = freezed,
     Object? factureRef = freezed,
     Object? dateAcquisition = null,
-    Object? valeurAcquisition = null,
+    Object? valeurAcquisition = freezed,
     Object? dateMiseService = freezed,
     Object? dureeAmortissement = null,
     Object? methodeAmortissement = null,
     Object? montantAmorti = null,
     Object? dateDernierInventaire = freezed,
     Object? sortieRef = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+    Object? departement = freezed,
+    Object? dossierId = freezed,
     Object? entretiens = null,
     Object? attributions = null,
     Object? photos = null,
@@ -339,26 +396,26 @@ class __$$ImmobilisationModelImplCopyWithImpl<$Res>
             ? _value.categorie
             : categorie // ignore: cast_nullable_to_non_nullable
                   as String,
-        compteComptable: null == compteComptable
+        compteComptable: freezed == compteComptable
             ? _value.compteComptable
             : compteComptable // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         famille: null == famille
             ? _value.famille
             : famille // ignore: cast_nullable_to_non_nullable
                   as FamilleImmobilisation,
-        siteId: null == siteId
+        siteId: freezed == siteId
             ? _value.siteId
             : siteId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        local: null == local
+                  as String?,
+        local: freezed == local
             ? _value.local
             : local // ignore: cast_nullable_to_non_nullable
-                  as String,
-        affectataire: null == affectataire
+                  as String?,
+        affectataire: freezed == affectataire
             ? _value.affectataire
             : affectataire // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         statut: null == statut
             ? _value.statut
             : statut // ignore: cast_nullable_to_non_nullable
@@ -367,14 +424,14 @@ class __$$ImmobilisationModelImplCopyWithImpl<$Res>
             ? _value.etat
             : etat // ignore: cast_nullable_to_non_nullable
                   as EtatBien,
-        fournisseur: null == fournisseur
+        fournisseur: freezed == fournisseur
             ? _value.fournisseur
             : fournisseur // ignore: cast_nullable_to_non_nullable
-                  as String,
-        bonCommandeRef: null == bonCommandeRef
+                  as String?,
+        bonCommandeRef: freezed == bonCommandeRef
             ? _value.bonCommandeRef
             : bonCommandeRef // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         factureRef: freezed == factureRef
             ? _value.factureRef
             : factureRef // ignore: cast_nullable_to_non_nullable
@@ -383,10 +440,10 @@ class __$$ImmobilisationModelImplCopyWithImpl<$Res>
             ? _value.dateAcquisition
             : dateAcquisition // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        valeurAcquisition: null == valeurAcquisition
+        valeurAcquisition: freezed == valeurAcquisition
             ? _value.valeurAcquisition
             : valeurAcquisition // ignore: cast_nullable_to_non_nullable
-                  as double,
+                  as double?,
         dateMiseService: freezed == dateMiseService
             ? _value.dateMiseService
             : dateMiseService // ignore: cast_nullable_to_non_nullable
@@ -410,6 +467,22 @@ class __$$ImmobilisationModelImplCopyWithImpl<$Res>
         sortieRef: freezed == sortieRef
             ? _value.sortieRef
             : sortieRef // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        departement: freezed == departement
+            ? _value.departement
+            : departement // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        dossierId: freezed == dossierId
+            ? _value.dossierId
+            : dossierId // ignore: cast_nullable_to_non_nullable
                   as String?,
         entretiens: null == entretiens
             ? _value._entretiens
@@ -436,24 +509,30 @@ class _$ImmobilisationModelImpl extends _ImmobilisationModel {
     required this.code,
     required this.designation,
     required this.categorie,
-    required this.compteComptable,
+    @JsonKey(name: 'compte_comptable') this.compteComptable,
     required this.famille,
-    required this.siteId,
-    required this.local,
-    required this.affectataire,
+    @JsonKey(name: 'site_id') this.siteId,
+    this.local,
+    this.affectataire,
     required this.statut,
     required this.etat,
-    required this.fournisseur,
-    required this.bonCommandeRef,
-    this.factureRef,
-    required this.dateAcquisition,
-    required this.valeurAcquisition,
-    this.dateMiseService,
-    required this.dureeAmortissement,
-    required this.methodeAmortissement,
+    this.fournisseur,
+    @JsonKey(name: 'bon_commande_ref') this.bonCommandeRef,
+    @JsonKey(name: 'facture_ref') this.factureRef,
+    @JsonKey(name: 'date_acquisition') required this.dateAcquisition,
+    @JsonKey(name: 'valeur_acquisition', fromJson: parseFlexibleDoubleNullable)
+    this.valeurAcquisition,
+    @JsonKey(name: 'date_mise_service') this.dateMiseService,
+    @JsonKey(name: 'duree_amortissement') required this.dureeAmortissement,
+    @JsonKey(name: 'methode_amortissement') required this.methodeAmortissement,
+    @JsonKey(name: 'montant_amorti', fromJson: parseFlexibleDouble)
     required this.montantAmorti,
-    this.dateDernierInventaire,
-    this.sortieRef,
+    @JsonKey(name: 'date_dernier_inventaire') this.dateDernierInventaire,
+    @JsonKey(name: 'sortie_ref') this.sortieRef,
+    @JsonKey(name: 'created_at') this.createdAt,
+    @JsonKey(name: 'updated_at') this.updatedAt,
+    this.departement,
+    @JsonKey(name: 'dossier_id') this.dossierId,
     final List<EntretienModel> entretiens = const [],
     final List<AttributionModel> attributions = const [],
     final List<PhotoModel> photos = const [],
@@ -474,42 +553,68 @@ class _$ImmobilisationModelImpl extends _ImmobilisationModel {
   @override
   final String categorie;
   @override
-  final String compteComptable;
+  @JsonKey(name: 'compte_comptable')
+  final String? compteComptable;
   @override
   final FamilleImmobilisation famille;
   @override
-  final String siteId;
+  @JsonKey(name: 'site_id')
+  final String? siteId;
   @override
-  final String local;
+  final String? local;
   @override
-  final String affectataire;
+  final String? affectataire;
   @override
   final StatutBien statut;
   @override
   final EtatBien etat;
   @override
-  final String fournisseur;
+  final String? fournisseur;
   @override
-  final String bonCommandeRef;
+  @JsonKey(name: 'bon_commande_ref')
+  final String? bonCommandeRef;
   @override
+  @JsonKey(name: 'facture_ref')
   final String? factureRef;
   @override
+  @JsonKey(name: 'date_acquisition')
   final DateTime dateAcquisition;
   @override
-  final double valeurAcquisition;
+  @JsonKey(name: 'valeur_acquisition', fromJson: parseFlexibleDoubleNullable)
+  final double? valeurAcquisition;
   @override
+  @JsonKey(name: 'date_mise_service')
   final DateTime? dateMiseService;
   @override
+  @JsonKey(name: 'duree_amortissement')
   final int dureeAmortissement;
   @override
+  @JsonKey(name: 'methode_amortissement')
   final MethodeAmortissement methodeAmortissement;
   @override
+  @JsonKey(name: 'montant_amorti', fromJson: parseFlexibleDouble)
   final double montantAmorti;
   @override
+  @JsonKey(name: 'date_dernier_inventaire')
   final DateTime? dateDernierInventaire;
   @override
+  @JsonKey(name: 'sortie_ref')
   final String? sortieRef;
+  @override
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
+  @override
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
+  // Additives (chantier web organisation, même table partagée) — nullable.
+  @override
+  final String? departement;
+  @override
+  @JsonKey(name: 'dossier_id')
+  final String? dossierId;
+  // Composition app, absents de la vraie réponse — voir doc de classe.
   final List<EntretienModel> _entretiens;
+  // Composition app, absents de la vraie réponse — voir doc de classe.
   @override
   @JsonKey()
   List<EntretienModel> get entretiens {
@@ -538,7 +643,7 @@ class _$ImmobilisationModelImpl extends _ImmobilisationModel {
 
   @override
   String toString() {
-    return 'ImmobilisationModel(id: $id, code: $code, designation: $designation, categorie: $categorie, compteComptable: $compteComptable, famille: $famille, siteId: $siteId, local: $local, affectataire: $affectataire, statut: $statut, etat: $etat, fournisseur: $fournisseur, bonCommandeRef: $bonCommandeRef, factureRef: $factureRef, dateAcquisition: $dateAcquisition, valeurAcquisition: $valeurAcquisition, dateMiseService: $dateMiseService, dureeAmortissement: $dureeAmortissement, methodeAmortissement: $methodeAmortissement, montantAmorti: $montantAmorti, dateDernierInventaire: $dateDernierInventaire, sortieRef: $sortieRef, entretiens: $entretiens, attributions: $attributions, photos: $photos)';
+    return 'ImmobilisationModel(id: $id, code: $code, designation: $designation, categorie: $categorie, compteComptable: $compteComptable, famille: $famille, siteId: $siteId, local: $local, affectataire: $affectataire, statut: $statut, etat: $etat, fournisseur: $fournisseur, bonCommandeRef: $bonCommandeRef, factureRef: $factureRef, dateAcquisition: $dateAcquisition, valeurAcquisition: $valeurAcquisition, dateMiseService: $dateMiseService, dureeAmortissement: $dureeAmortissement, methodeAmortissement: $methodeAmortissement, montantAmorti: $montantAmorti, dateDernierInventaire: $dateDernierInventaire, sortieRef: $sortieRef, createdAt: $createdAt, updatedAt: $updatedAt, departement: $departement, dossierId: $dossierId, entretiens: $entretiens, attributions: $attributions, photos: $photos)';
   }
 
   @override
@@ -583,6 +688,14 @@ class _$ImmobilisationModelImpl extends _ImmobilisationModel {
                 other.dateDernierInventaire == dateDernierInventaire) &&
             (identical(other.sortieRef, sortieRef) ||
                 other.sortieRef == sortieRef) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.departement, departement) ||
+                other.departement == departement) &&
+            (identical(other.dossierId, dossierId) ||
+                other.dossierId == dossierId) &&
             const DeepCollectionEquality().equals(
               other._entretiens,
               _entretiens,
@@ -620,6 +733,10 @@ class _$ImmobilisationModelImpl extends _ImmobilisationModel {
     montantAmorti,
     dateDernierInventaire,
     sortieRef,
+    createdAt,
+    updatedAt,
+    departement,
+    dossierId,
     const DeepCollectionEquality().hash(_entretiens),
     const DeepCollectionEquality().hash(_attributions),
     const DeepCollectionEquality().hash(_photos),
@@ -648,24 +765,32 @@ abstract class _ImmobilisationModel extends ImmobilisationModel {
     required final String code,
     required final String designation,
     required final String categorie,
-    required final String compteComptable,
+    @JsonKey(name: 'compte_comptable') final String? compteComptable,
     required final FamilleImmobilisation famille,
-    required final String siteId,
-    required final String local,
-    required final String affectataire,
+    @JsonKey(name: 'site_id') final String? siteId,
+    final String? local,
+    final String? affectataire,
     required final StatutBien statut,
     required final EtatBien etat,
-    required final String fournisseur,
-    required final String bonCommandeRef,
-    final String? factureRef,
-    required final DateTime dateAcquisition,
-    required final double valeurAcquisition,
-    final DateTime? dateMiseService,
-    required final int dureeAmortissement,
+    final String? fournisseur,
+    @JsonKey(name: 'bon_commande_ref') final String? bonCommandeRef,
+    @JsonKey(name: 'facture_ref') final String? factureRef,
+    @JsonKey(name: 'date_acquisition') required final DateTime dateAcquisition,
+    @JsonKey(name: 'valeur_acquisition', fromJson: parseFlexibleDoubleNullable)
+    final double? valeurAcquisition,
+    @JsonKey(name: 'date_mise_service') final DateTime? dateMiseService,
+    @JsonKey(name: 'duree_amortissement') required final int dureeAmortissement,
+    @JsonKey(name: 'methode_amortissement')
     required final MethodeAmortissement methodeAmortissement,
+    @JsonKey(name: 'montant_amorti', fromJson: parseFlexibleDouble)
     required final double montantAmorti,
+    @JsonKey(name: 'date_dernier_inventaire')
     final DateTime? dateDernierInventaire,
-    final String? sortieRef,
+    @JsonKey(name: 'sortie_ref') final String? sortieRef,
+    @JsonKey(name: 'created_at') final DateTime? createdAt,
+    @JsonKey(name: 'updated_at') final DateTime? updatedAt,
+    final String? departement,
+    @JsonKey(name: 'dossier_id') final String? dossierId,
     final List<EntretienModel> entretiens,
     final List<AttributionModel> attributions,
     final List<PhotoModel> photos,
@@ -684,41 +809,64 @@ abstract class _ImmobilisationModel extends ImmobilisationModel {
   @override
   String get categorie;
   @override
-  String get compteComptable;
+  @JsonKey(name: 'compte_comptable')
+  String? get compteComptable;
   @override
   FamilleImmobilisation get famille;
   @override
-  String get siteId;
+  @JsonKey(name: 'site_id')
+  String? get siteId;
   @override
-  String get local;
+  String? get local;
   @override
-  String get affectataire;
+  String? get affectataire;
   @override
   StatutBien get statut;
   @override
   EtatBien get etat;
   @override
-  String get fournisseur;
+  String? get fournisseur;
   @override
-  String get bonCommandeRef;
+  @JsonKey(name: 'bon_commande_ref')
+  String? get bonCommandeRef;
   @override
+  @JsonKey(name: 'facture_ref')
   String? get factureRef;
   @override
+  @JsonKey(name: 'date_acquisition')
   DateTime get dateAcquisition;
   @override
-  double get valeurAcquisition;
+  @JsonKey(name: 'valeur_acquisition', fromJson: parseFlexibleDoubleNullable)
+  double? get valeurAcquisition;
   @override
+  @JsonKey(name: 'date_mise_service')
   DateTime? get dateMiseService;
   @override
+  @JsonKey(name: 'duree_amortissement')
   int get dureeAmortissement;
   @override
+  @JsonKey(name: 'methode_amortissement')
   MethodeAmortissement get methodeAmortissement;
   @override
+  @JsonKey(name: 'montant_amorti', fromJson: parseFlexibleDouble)
   double get montantAmorti;
   @override
+  @JsonKey(name: 'date_dernier_inventaire')
   DateTime? get dateDernierInventaire;
   @override
+  @JsonKey(name: 'sortie_ref')
   String? get sortieRef;
+  @override
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt;
+  @override
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt; // Additives (chantier web organisation, même table partagée) — nullable.
+  @override
+  String? get departement;
+  @override
+  @JsonKey(name: 'dossier_id')
+  String? get dossierId; // Composition app, absents de la vraie réponse — voir doc de classe.
   @override
   List<EntretienModel> get entretiens;
   @override

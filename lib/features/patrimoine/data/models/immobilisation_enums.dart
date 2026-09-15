@@ -1,3 +1,7 @@
+// Valeurs confirmées par la doc Seven (2026-09-15, schémas Patrimoine) —
+// exemples JSON réels sur `immobilisations.statut`/`.etat`/`.famille`/
+// `.methode_amortissement`.
+
 import 'package:json_annotation/json_annotation.dart';
 
 /// État physique constaté du bien. Valeurs alignées sur `immobilisations.etat`
@@ -17,6 +21,19 @@ enum EtatBien {
   const EtatBien(this.label);
 
   final String label;
+}
+
+/// Valeur exacte attendue par le backend (query params, corps de requête) —
+/// `.name` ne suffit pas pour [EtatBien.horsService] (`"horsService"` ≠
+/// `"horsservice"`).
+extension EtatBienWireValue on EtatBien {
+  String get wireValue => switch (this) {
+        EtatBien.neuf => 'neuf',
+        EtatBien.bon => 'bon',
+        EtatBien.moyen => 'moyen',
+        EtatBien.degrade => 'degrade',
+        EtatBien.horsService => 'horsservice',
+      };
 }
 
 /// Statut administratif du bien (`immobilisations.statut`).

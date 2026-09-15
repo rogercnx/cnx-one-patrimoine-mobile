@@ -23,12 +23,19 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) {
 mixin _$UserModel {
   String get id => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
-  String? get name => throw _privateConstructorUsedError;
-  String? get firstName => throw _privateConstructorUsedError;
-  String? get lastName => throw _privateConstructorUsedError;
-  String? get phone => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get tenantId => throw _privateConstructorUsedError;
+  String get tenantSlug => throw _privateConstructorUsedError;
+  List<String> get permissions => throw _privateConstructorUsedError;
   String? get image => throw _privateConstructorUsedError;
-  String? get tenantSlug => throw _privateConstructorUsedError;
+  String? get phone => throw _privateConstructorUsedError;
+  String? get role => throw _privateConstructorUsedError;
+  List<String>? get roles => throw _privateConstructorUsedError;
+  bool? get isEmployee => throw _privateConstructorUsedError;
+  String? get tenantName => throw _privateConstructorUsedError;
+  bool? get cnxlinkAccess => throw _privateConstructorUsedError;
+  bool? get permissionsStale => throw _privateConstructorUsedError;
+  bool? get isOwner => throw _privateConstructorUsedError;
 
   /// Serializes this UserModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,12 +55,19 @@ abstract class $UserModelCopyWith<$Res> {
   $Res call({
     String id,
     String email,
-    String? name,
-    String? firstName,
-    String? lastName,
-    String? phone,
+    String name,
+    String tenantId,
+    String tenantSlug,
+    List<String> permissions,
     String? image,
-    String? tenantSlug,
+    String? phone,
+    String? role,
+    List<String>? roles,
+    bool? isEmployee,
+    String? tenantName,
+    bool? cnxlinkAccess,
+    bool? permissionsStale,
+    bool? isOwner,
   });
 }
 
@@ -74,12 +88,19 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
   $Res call({
     Object? id = null,
     Object? email = null,
-    Object? name = freezed,
-    Object? firstName = freezed,
-    Object? lastName = freezed,
-    Object? phone = freezed,
+    Object? name = null,
+    Object? tenantId = null,
+    Object? tenantSlug = null,
+    Object? permissions = null,
     Object? image = freezed,
-    Object? tenantSlug = freezed,
+    Object? phone = freezed,
+    Object? role = freezed,
+    Object? roles = freezed,
+    Object? isEmployee = freezed,
+    Object? tenantName = freezed,
+    Object? cnxlinkAccess = freezed,
+    Object? permissionsStale = freezed,
+    Object? isOwner = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -91,30 +112,58 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
                 ? _value.email
                 : email // ignore: cast_nullable_to_non_nullable
                       as String,
-            name: freezed == name
+            name: null == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            firstName: freezed == firstName
-                ? _value.firstName
-                : firstName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            lastName: freezed == lastName
-                ? _value.lastName
-                : lastName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            tenantId: null == tenantId
+                ? _value.tenantId
+                : tenantId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            tenantSlug: null == tenantSlug
+                ? _value.tenantSlug
+                : tenantSlug // ignore: cast_nullable_to_non_nullable
+                      as String,
+            permissions: null == permissions
+                ? _value.permissions
+                : permissions // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            image: freezed == image
+                ? _value.image
+                : image // ignore: cast_nullable_to_non_nullable
                       as String?,
             phone: freezed == phone
                 ? _value.phone
                 : phone // ignore: cast_nullable_to_non_nullable
                       as String?,
-            image: freezed == image
-                ? _value.image
-                : image // ignore: cast_nullable_to_non_nullable
+            role: freezed == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
                       as String?,
-            tenantSlug: freezed == tenantSlug
-                ? _value.tenantSlug
-                : tenantSlug // ignore: cast_nullable_to_non_nullable
+            roles: freezed == roles
+                ? _value.roles
+                : roles // ignore: cast_nullable_to_non_nullable
+                      as List<String>?,
+            isEmployee: freezed == isEmployee
+                ? _value.isEmployee
+                : isEmployee // ignore: cast_nullable_to_non_nullable
+                      as bool?,
+            tenantName: freezed == tenantName
+                ? _value.tenantName
+                : tenantName // ignore: cast_nullable_to_non_nullable
                       as String?,
+            cnxlinkAccess: freezed == cnxlinkAccess
+                ? _value.cnxlinkAccess
+                : cnxlinkAccess // ignore: cast_nullable_to_non_nullable
+                      as bool?,
+            permissionsStale: freezed == permissionsStale
+                ? _value.permissionsStale
+                : permissionsStale // ignore: cast_nullable_to_non_nullable
+                      as bool?,
+            isOwner: freezed == isOwner
+                ? _value.isOwner
+                : isOwner // ignore: cast_nullable_to_non_nullable
+                      as bool?,
           )
           as $Val,
     );
@@ -133,12 +182,19 @@ abstract class _$$UserModelImplCopyWith<$Res>
   $Res call({
     String id,
     String email,
-    String? name,
-    String? firstName,
-    String? lastName,
-    String? phone,
+    String name,
+    String tenantId,
+    String tenantSlug,
+    List<String> permissions,
     String? image,
-    String? tenantSlug,
+    String? phone,
+    String? role,
+    List<String>? roles,
+    bool? isEmployee,
+    String? tenantName,
+    bool? cnxlinkAccess,
+    bool? permissionsStale,
+    bool? isOwner,
   });
 }
 
@@ -158,12 +214,19 @@ class __$$UserModelImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? email = null,
-    Object? name = freezed,
-    Object? firstName = freezed,
-    Object? lastName = freezed,
-    Object? phone = freezed,
+    Object? name = null,
+    Object? tenantId = null,
+    Object? tenantSlug = null,
+    Object? permissions = null,
     Object? image = freezed,
-    Object? tenantSlug = freezed,
+    Object? phone = freezed,
+    Object? role = freezed,
+    Object? roles = freezed,
+    Object? isEmployee = freezed,
+    Object? tenantName = freezed,
+    Object? cnxlinkAccess = freezed,
+    Object? permissionsStale = freezed,
+    Object? isOwner = freezed,
   }) {
     return _then(
       _$UserModelImpl(
@@ -175,30 +238,58 @@ class __$$UserModelImplCopyWithImpl<$Res>
             ? _value.email
             : email // ignore: cast_nullable_to_non_nullable
                   as String,
-        name: freezed == name
+        name: null == name
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        firstName: freezed == firstName
-            ? _value.firstName
-            : firstName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        lastName: freezed == lastName
-            ? _value.lastName
-            : lastName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        tenantId: null == tenantId
+            ? _value.tenantId
+            : tenantId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        tenantSlug: null == tenantSlug
+            ? _value.tenantSlug
+            : tenantSlug // ignore: cast_nullable_to_non_nullable
+                  as String,
+        permissions: null == permissions
+            ? _value._permissions
+            : permissions // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        image: freezed == image
+            ? _value.image
+            : image // ignore: cast_nullable_to_non_nullable
                   as String?,
         phone: freezed == phone
             ? _value.phone
             : phone // ignore: cast_nullable_to_non_nullable
                   as String?,
-        image: freezed == image
-            ? _value.image
-            : image // ignore: cast_nullable_to_non_nullable
+        role: freezed == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
                   as String?,
-        tenantSlug: freezed == tenantSlug
-            ? _value.tenantSlug
-            : tenantSlug // ignore: cast_nullable_to_non_nullable
+        roles: freezed == roles
+            ? _value._roles
+            : roles // ignore: cast_nullable_to_non_nullable
+                  as List<String>?,
+        isEmployee: freezed == isEmployee
+            ? _value.isEmployee
+            : isEmployee // ignore: cast_nullable_to_non_nullable
+                  as bool?,
+        tenantName: freezed == tenantName
+            ? _value.tenantName
+            : tenantName // ignore: cast_nullable_to_non_nullable
                   as String?,
+        cnxlinkAccess: freezed == cnxlinkAccess
+            ? _value.cnxlinkAccess
+            : cnxlinkAccess // ignore: cast_nullable_to_non_nullable
+                  as bool?,
+        permissionsStale: freezed == permissionsStale
+            ? _value.permissionsStale
+            : permissionsStale // ignore: cast_nullable_to_non_nullable
+                  as bool?,
+        isOwner: freezed == isOwner
+            ? _value.isOwner
+            : isOwner // ignore: cast_nullable_to_non_nullable
+                  as bool?,
       ),
     );
   }
@@ -210,13 +301,21 @@ class _$UserModelImpl implements _UserModel {
   const _$UserModelImpl({
     required this.id,
     required this.email,
-    this.name,
-    this.firstName,
-    this.lastName,
-    this.phone,
+    required this.name,
+    required this.tenantId,
+    required this.tenantSlug,
+    required final List<String> permissions,
     this.image,
-    this.tenantSlug,
-  });
+    this.phone,
+    this.role,
+    final List<String>? roles,
+    this.isEmployee,
+    this.tenantName,
+    this.cnxlinkAccess,
+    this.permissionsStale,
+    this.isOwner,
+  }) : _permissions = permissions,
+       _roles = roles;
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -226,21 +325,49 @@ class _$UserModelImpl implements _UserModel {
   @override
   final String email;
   @override
-  final String? name;
+  final String name;
   @override
-  final String? firstName;
+  final String tenantId;
   @override
-  final String? lastName;
+  final String tenantSlug;
+  final List<String> _permissions;
   @override
-  final String? phone;
+  List<String> get permissions {
+    if (_permissions is EqualUnmodifiableListView) return _permissions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_permissions);
+  }
+
   @override
   final String? image;
   @override
-  final String? tenantSlug;
+  final String? phone;
+  @override
+  final String? role;
+  final List<String>? _roles;
+  @override
+  List<String>? get roles {
+    final value = _roles;
+    if (value == null) return null;
+    if (_roles is EqualUnmodifiableListView) return _roles;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  final bool? isEmployee;
+  @override
+  final String? tenantName;
+  @override
+  final bool? cnxlinkAccess;
+  @override
+  final bool? permissionsStale;
+  @override
+  final bool? isOwner;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, name: $name, firstName: $firstName, lastName: $lastName, phone: $phone, image: $image, tenantSlug: $tenantSlug)';
+    return 'UserModel(id: $id, email: $email, name: $name, tenantId: $tenantId, tenantSlug: $tenantSlug, permissions: $permissions, image: $image, phone: $phone, role: $role, roles: $roles, isEmployee: $isEmployee, tenantName: $tenantName, cnxlinkAccess: $cnxlinkAccess, permissionsStale: $permissionsStale, isOwner: $isOwner)';
   }
 
   @override
@@ -251,14 +378,27 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.firstName, firstName) ||
-                other.firstName == firstName) &&
-            (identical(other.lastName, lastName) ||
-                other.lastName == lastName) &&
-            (identical(other.phone, phone) || other.phone == phone) &&
-            (identical(other.image, image) || other.image == image) &&
+            (identical(other.tenantId, tenantId) ||
+                other.tenantId == tenantId) &&
             (identical(other.tenantSlug, tenantSlug) ||
-                other.tenantSlug == tenantSlug));
+                other.tenantSlug == tenantSlug) &&
+            const DeepCollectionEquality().equals(
+              other._permissions,
+              _permissions,
+            ) &&
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.phone, phone) || other.phone == phone) &&
+            (identical(other.role, role) || other.role == role) &&
+            const DeepCollectionEquality().equals(other._roles, _roles) &&
+            (identical(other.isEmployee, isEmployee) ||
+                other.isEmployee == isEmployee) &&
+            (identical(other.tenantName, tenantName) ||
+                other.tenantName == tenantName) &&
+            (identical(other.cnxlinkAccess, cnxlinkAccess) ||
+                other.cnxlinkAccess == cnxlinkAccess) &&
+            (identical(other.permissionsStale, permissionsStale) ||
+                other.permissionsStale == permissionsStale) &&
+            (identical(other.isOwner, isOwner) || other.isOwner == isOwner));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -268,11 +408,18 @@ class _$UserModelImpl implements _UserModel {
     id,
     email,
     name,
-    firstName,
-    lastName,
-    phone,
-    image,
+    tenantId,
     tenantSlug,
+    const DeepCollectionEquality().hash(_permissions),
+    image,
+    phone,
+    role,
+    const DeepCollectionEquality().hash(_roles),
+    isEmployee,
+    tenantName,
+    cnxlinkAccess,
+    permissionsStale,
+    isOwner,
   );
 
   /// Create a copy of UserModel
@@ -293,12 +440,19 @@ abstract class _UserModel implements UserModel {
   const factory _UserModel({
     required final String id,
     required final String email,
-    final String? name,
-    final String? firstName,
-    final String? lastName,
-    final String? phone,
+    required final String name,
+    required final String tenantId,
+    required final String tenantSlug,
+    required final List<String> permissions,
     final String? image,
-    final String? tenantSlug,
+    final String? phone,
+    final String? role,
+    final List<String>? roles,
+    final bool? isEmployee,
+    final String? tenantName,
+    final bool? cnxlinkAccess,
+    final bool? permissionsStale,
+    final bool? isOwner,
   }) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
@@ -309,17 +463,31 @@ abstract class _UserModel implements UserModel {
   @override
   String get email;
   @override
-  String? get name;
+  String get name;
   @override
-  String? get firstName;
+  String get tenantId;
   @override
-  String? get lastName;
+  String get tenantSlug;
   @override
-  String? get phone;
+  List<String> get permissions;
   @override
   String? get image;
   @override
-  String? get tenantSlug;
+  String? get phone;
+  @override
+  String? get role;
+  @override
+  List<String>? get roles;
+  @override
+  bool? get isEmployee;
+  @override
+  String? get tenantName;
+  @override
+  bool? get cnxlinkAccess;
+  @override
+  bool? get permissionsStale;
+  @override
+  bool? get isOwner;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.

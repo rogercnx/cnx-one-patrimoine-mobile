@@ -164,7 +164,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                             for (final (i, m) in restants.take(6).toList().indexed)
                               _RestantRow(
                                 immo: m,
-                                site: registry.sites.where((s) => s.id == m.siteId).firstOrNull?.nom ?? m.siteId,
+                                site: registry.sites.where((s) => s.id == m.siteId).firstOrNull?.nom ?? m.siteId ?? '—',
                                 showDivider: i != restants.take(6).length - 1,
                                 onTap: () => _ouvrirFiche(m.id),
                               ),

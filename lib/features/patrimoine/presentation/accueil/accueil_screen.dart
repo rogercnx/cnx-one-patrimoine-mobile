@@ -18,6 +18,7 @@ class AccueilScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final registryAsync = ref.watch(patrimoineRegistryProvider);
     final sessionAsync = ref.watch(comptagesSessionProvider);
+    final agent = ref.watch(agentAffichageProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -37,9 +38,9 @@ class AccueilScreen extends ConsumerWidget {
           loading: () => const LoadingView(),
           error: (e, st) => ErrorView(message: '$e', onRetry: () => ref.invalidate(comptagesSessionProvider)),
           data: (session) => _AccueilContent(
-            agentNom: registry.agent.nom,
-            agentRole: registry.agent.role,
-            agentInitiales: registry.agent.initiales,
+            agentNom: agent.nom,
+            agentRole: agent.role,
+            agentInitiales: agent.initiales,
             campagneRef: registry.campagne.reference,
             campagneLibelle: registry.campagne.libelle,
             campagneDebut: registry.campagne.dateDebut,
@@ -95,7 +96,7 @@ class _AccueilContent extends StatelessWidget {
   final String campagneRef;
   final String campagneLibelle;
   final DateTime campagneDebut;
-  final DateTime campagneFin;
+  final DateTime? campagneFin;
   final int joursRestants;
   final List<SiteModel> sites;
   final List<ImmobilisationModel> immobilisations;

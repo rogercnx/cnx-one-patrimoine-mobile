@@ -123,6 +123,15 @@ flutter run --dart-define=API_BASE_URL=https://backend.zira24.com/api/v1
 flutter build apk --dart-define=API_BASE_URL=https://backend.zira24.com/api/v1
 ```
 
+Clé API (`X-API-Key`, requise en prod — voir section Patrimoine ci-dessous), même
+principe : jamais codée en dur, jamais commitée, lue uniquement via `--dart-define` :
+```bash
+flutter run --dart-define=API_BASE_URL=... --dart-define=API_KEY=<clé fournie séparément>
+```
+Si `API_KEY` est omis au build, le header est simplement omis (`ApiKeyInterceptor`,
+`core/network/api_key_interceptor.dart`) — toléré uniquement contre un backend en
+développement.
+
 - **Refresh token automatique** : `AuthInterceptor` intercepte les 401, tente `POST /auth/refresh`, rejoue la requête originale si succès, sinon déconnecte proprement et notifie l'état global d'auth.
 - **Multi-tenant** : `TenantInterceptor` ajoute systématiquement le header `X-Tenant-Slug` lu depuis le storage sécurisé, sur toutes les requêtes sauf le login initial.
 
@@ -378,6 +387,26 @@ GET    /api/v1/patrimoine/kpi/alertes                            (réceptions pa
 
 ---
 
+### 3.2 Patrimoine — schéma API confirmé (2026-09-15)
+
+> Source : document complémentaire de Seven ("Patrimoine mobile — schémas requête/réponse"), en réponse à 6 questions précises sur `/api/v1/patrimoine/**`. Remplace toutes les hypothèses précédentes sur ce périmètre.
+
+- **Casse asymétrique, propre à Patrimoine** : les **réponses** sont en **snake_case** (`site_id`, `date_acquisition`, `valeur_acquisition`, `compte_comptable`, `bon_commande_ref`...). Les **corps de requête d'écriture** (POST/PATCH) sont en **camelCase** (`immobilisationId`, `siteId`, `budgetPrevu`...). Ne pas confondre avec le module **Auth**, qui reste entièrement en camelCase (requêtes et réponses) — les deux conventions coexistent, ne jamais les uniformiser par erreur.
+- **Deux headers requis en prod** : `Authorization: Bearer <jwt>` **et** `X-API-Key: <clé>` (voir `ApiKeyInterceptor`, section 2.3). Le tenant vient uniquement du JWT — ne jamais envoyer `X-Tenant-ID`/`X-Tenant-Slug` sauf besoin explicite (risque de `403 TENANT_MISMATCH` si incohérent avec le JWT). `X-API-Key` toléré absent seulement en développement.
+- **Enveloppe** : `{ data: T }` ou `{ data: T[] }` partout, **sauf** `GET /immobilisations` où `total`/`page`/`limit` sont à la racine (pas dans un sous-objet `meta`).
+- **Pagination** : uniquement sur `GET /immobilisations` (`page` 1-based, défaut 1 ; `limit` défaut 20, plafonné silencieusement à 200). Aucune autre liste n'est paginée.
+- **Montants en string** : `valeur_acquisition`, `montant_amorti`, `montant`, `budget_prevu` arrivent en JSON comme des **chaînes** (`"1066666.67"`), pas des nombres — voir `parseFlexibleDouble` (`json_converters.dart`). Idem pour `latitude`/`longitude` sur `Site`.
+- **Filtres query non documentés par le swagger, mais actifs** : `GET /immobilisations` (`site`, `statut`, `etat`, `categorie`, `q`), `GET /campagnes` (`statut`), `GET /campagnes/:id/comptages` (`agent_id`), `GET /dossiers` (`groupe`, `etape`, `site`, `departement`, `alerte`).
+- **Endpoint photo binaire** : `.../photos/:photoId/fichiers/:fichierId/content` renvoie le contenu brut proxifié par le serveur (pas de redirection ni d'URL signée) — consommer en flux binaire (`ResponseType.bytes` côté Dio), jamais comme du JSON.
+- **Champs additifs récents (chantier web organisation, nullable, sans impact mobile si ignorés)** : `Immobilisation.departement`/`.dossier_id` ; `Campagne.gel`/`.perimetre_site_id`/`.responsable` ; `Comptage.zone_id`/`.maj_corrections` ; `Dossier.etape_groupe_id`/`.statut`/`.rejet_motif`/`.fournisseur_id`.
+- **Codes d'erreur 409 dédiés** : `POST /campagnes/:id/comptages` → campagne clôturée (`CampagneClotureeException`) ; `POST /dossiers/:id/sortie` → `DOSSIER_HORS_GROUPE_SORTIE` (`DossierHorsGroupeSortieException`) si le dossier n'appartient pas au groupe `sortie`.
+- **Pas de garde anti-double-validation** sur `POST /dossiers/:id/validations` : revalider le même rôle avance l'étape à nouveau — éviter tout double appel réseau (débounce UI à prévoir côté écran, hors périmètre de l'implémentation du repository).
+- **`GET /groupes`/`GET /etapes` confirmés par appel réel** (2026-09-15, compte `dev-seeg`, avec la vraie clé API) : schéma déduit de CLAUDE.md 3.1 exact à 100 % (4 groupes, 10 étapes, `icone` toujours `null` sur les étapes). Même appel : `X-API-Key` bien appliqué — absent toléré (dev), mais une clé présente et fausse renvoie `401 {statusCode, error: "INVALID_API_KEY", message}` — ce message-erreur spécifique n'était pas documenté par Seven. `sites`/`immobilisations`/`campagnes`/`dossiers` renvoient `{data: []}` sur `dev-seeg` (tenant de test vide, comme lors du rapport empirique précédent) : enveloppes confirmées à nouveau, mais aucun objet réel disponible pour revalider les champs internes au-delà des exemples déjà fournis par Seven.
+- **Résiduel non confirmé par un exemple JSON réel** (déduit de CLAUDE.md 3.1 et de la convention snake_case, à revalider dès qu'un objet réel est disponible) : `Entretien`, `Attribution`, `Photo`. **Non implémenté du tout**, faute de tout schéma documenté : `GET /kpi/alertes`.
+- **`PatrimoineRepositoryImpl`** couvre désormais l'ensemble des routes confirmées (lecture + écriture, voir `data/patrimoine_repository_impl.dart`) mais reste **non branché** dans `patrimoineRepositoryProvider` — `PatrimoineRepositoryMock` reste actif en attendant une validation manuelle avec un vrai token + la clé API.
+
+---
+
 ## 4. Règles de collaboration
 
 - Toujours respecter l'architecture feature-first définie en section 2. Ne pas improviser une autre structure.
@@ -385,3 +414,7 @@ GET    /api/v1/patrimoine/kpi/alertes                            (réceptions pa
 - Ne jamais coder une base URL ou une clé en dur — utiliser les variables d'environnement définies (`--dart-define`, `AppEnv`).
 - Utiliser freezed + json_serializable pour tout nouveau modèle de données.
 - Avant toute modification, lancer `dart analyze` et corriger les warnings avant de considérer une tâche terminée.
+- **Convention actée** : quand l'interface `PatrimoineRepository` n'a pas de méthode générique correspondant exactement à une route backend (ex. pas de `getCampagnes()` alors que le backend expose `GET /patrimoine/campagnes`), la solution par défaut est de filtrer côté client sur un champ déjà présent dans le modèle (ex. `getCampagneEnCours()` récupère la liste puis filtre sur `statut == StatutCampagne.enCours`) plutôt que de multiplier les endpoints ou les méthodes d'interface. Voir le mapping `getCampagneEnCours()` dans `PatrimoineRepositoryImpl` comme référence.
+- **Règle d'autonomie** : ne demander une validation humaine que lorsqu'une information est réellement indisponible autrement (schéma backend non documenté, ambiguïté entre deux comportements produit différents pour l'utilisateur final, décision irréversible comme une migration de données). Pour toute question qui se résout en consultant ce fichier, le code déjà écrit dans le projet, le MCP Dart/Flutter (`dart_fix`, `dart_format`, analyse de dépendances, doc officielle) ou les skills installés — décider seul, appliquer, et mentionner simplement le choix fait dans le résumé final, sans s'arrêter pour demander confirmation avant d'agir.
+- Utiliser systématiquement le serveur MCP Dart/Flutter et les skills du plugin `dart-flutter` pour toute vérification technique (formatage, lint, patterns idiomatiques, hot reload) plutôt que de demander si une approche est correcte — ce sont des faits vérifiables directement.
+- Les seuls cas qui justifient encore de s'arrêter et demander : donnée externe manquante non déductible (ex. schéma backend non documenté), choix ayant un impact produit visible pour l'utilisateur final et non tranché par ce fichier, ou action destructive/irréversible (suppression de données, force-push, reset git).

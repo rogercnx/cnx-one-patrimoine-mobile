@@ -22,15 +22,23 @@ EntretienModel _$EntretienModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$EntretienModel {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'immobilisation_id')
+  String? get immobilisationId => throw _privateConstructorUsedError;
   DateTime get date => throw _privateConstructorUsedError;
   String get titre => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: parseFlexibleDouble)
   double get cout => throw _privateConstructorUsedError;
   String get prestataire => throw _privateConstructorUsedError;
   String? get observation => throw _privateConstructorUsedError;
+  @JsonKey(name: 'bon_commande_ref')
   String? get bonCommandeRef => throw _privateConstructorUsedError;
+  @JsonKey(name: 'bon_livraison_ref')
   String? get bonLivraisonRef => throw _privateConstructorUsedError;
+  @JsonKey(name: 'facture_ref')
   String? get factureRef => throw _privateConstructorUsedError;
+  @JsonKey(name: 'dossier_ref')
   String? get dossierRef => throw _privateConstructorUsedError;
+  @JsonKey(name: 'duree_intervention')
   String? get dureeIntervention => throw _privateConstructorUsedError;
   String? get technicien => throw _privateConstructorUsedError;
 
@@ -53,16 +61,17 @@ abstract class $EntretienModelCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    @JsonKey(name: 'immobilisation_id') String? immobilisationId,
     DateTime date,
     String titre,
-    double cout,
+    @JsonKey(fromJson: parseFlexibleDouble) double cout,
     String prestataire,
     String? observation,
-    String? bonCommandeRef,
-    String? bonLivraisonRef,
-    String? factureRef,
-    String? dossierRef,
-    String? dureeIntervention,
+    @JsonKey(name: 'bon_commande_ref') String? bonCommandeRef,
+    @JsonKey(name: 'bon_livraison_ref') String? bonLivraisonRef,
+    @JsonKey(name: 'facture_ref') String? factureRef,
+    @JsonKey(name: 'dossier_ref') String? dossierRef,
+    @JsonKey(name: 'duree_intervention') String? dureeIntervention,
     String? technicien,
   });
 }
@@ -83,6 +92,7 @@ class _$EntretienModelCopyWithImpl<$Res, $Val extends EntretienModel>
   @override
   $Res call({
     Object? id = null,
+    Object? immobilisationId = freezed,
     Object? date = null,
     Object? titre = null,
     Object? cout = null,
@@ -101,6 +111,10 @@ class _$EntretienModelCopyWithImpl<$Res, $Val extends EntretienModel>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
+            immobilisationId: freezed == immobilisationId
+                ? _value.immobilisationId
+                : immobilisationId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             date: null == date
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
@@ -162,16 +176,17 @@ abstract class _$$EntretienModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    @JsonKey(name: 'immobilisation_id') String? immobilisationId,
     DateTime date,
     String titre,
-    double cout,
+    @JsonKey(fromJson: parseFlexibleDouble) double cout,
     String prestataire,
     String? observation,
-    String? bonCommandeRef,
-    String? bonLivraisonRef,
-    String? factureRef,
-    String? dossierRef,
-    String? dureeIntervention,
+    @JsonKey(name: 'bon_commande_ref') String? bonCommandeRef,
+    @JsonKey(name: 'bon_livraison_ref') String? bonLivraisonRef,
+    @JsonKey(name: 'facture_ref') String? factureRef,
+    @JsonKey(name: 'dossier_ref') String? dossierRef,
+    @JsonKey(name: 'duree_intervention') String? dureeIntervention,
     String? technicien,
   });
 }
@@ -191,6 +206,7 @@ class __$$EntretienModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? immobilisationId = freezed,
     Object? date = null,
     Object? titre = null,
     Object? cout = null,
@@ -209,6 +225,10 @@ class __$$EntretienModelImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
+        immobilisationId: freezed == immobilisationId
+            ? _value.immobilisationId
+            : immobilisationId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         date: null == date
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
@@ -263,16 +283,17 @@ class __$$EntretienModelImplCopyWithImpl<$Res>
 class _$EntretienModelImpl implements _EntretienModel {
   const _$EntretienModelImpl({
     required this.id,
+    @JsonKey(name: 'immobilisation_id') this.immobilisationId,
     required this.date,
     required this.titre,
-    required this.cout,
+    @JsonKey(fromJson: parseFlexibleDouble) required this.cout,
     required this.prestataire,
     this.observation,
-    this.bonCommandeRef,
-    this.bonLivraisonRef,
-    this.factureRef,
-    this.dossierRef,
-    this.dureeIntervention,
+    @JsonKey(name: 'bon_commande_ref') this.bonCommandeRef,
+    @JsonKey(name: 'bon_livraison_ref') this.bonLivraisonRef,
+    @JsonKey(name: 'facture_ref') this.factureRef,
+    @JsonKey(name: 'dossier_ref') this.dossierRef,
+    @JsonKey(name: 'duree_intervention') this.dureeIntervention,
     this.technicien,
   });
 
@@ -282,31 +303,40 @@ class _$EntretienModelImpl implements _EntretienModel {
   @override
   final String id;
   @override
+  @JsonKey(name: 'immobilisation_id')
+  final String? immobilisationId;
+  @override
   final DateTime date;
   @override
   final String titre;
   @override
+  @JsonKey(fromJson: parseFlexibleDouble)
   final double cout;
   @override
   final String prestataire;
   @override
   final String? observation;
   @override
+  @JsonKey(name: 'bon_commande_ref')
   final String? bonCommandeRef;
   @override
+  @JsonKey(name: 'bon_livraison_ref')
   final String? bonLivraisonRef;
   @override
+  @JsonKey(name: 'facture_ref')
   final String? factureRef;
   @override
+  @JsonKey(name: 'dossier_ref')
   final String? dossierRef;
   @override
+  @JsonKey(name: 'duree_intervention')
   final String? dureeIntervention;
   @override
   final String? technicien;
 
   @override
   String toString() {
-    return 'EntretienModel(id: $id, date: $date, titre: $titre, cout: $cout, prestataire: $prestataire, observation: $observation, bonCommandeRef: $bonCommandeRef, bonLivraisonRef: $bonLivraisonRef, factureRef: $factureRef, dossierRef: $dossierRef, dureeIntervention: $dureeIntervention, technicien: $technicien)';
+    return 'EntretienModel(id: $id, immobilisationId: $immobilisationId, date: $date, titre: $titre, cout: $cout, prestataire: $prestataire, observation: $observation, bonCommandeRef: $bonCommandeRef, bonLivraisonRef: $bonLivraisonRef, factureRef: $factureRef, dossierRef: $dossierRef, dureeIntervention: $dureeIntervention, technicien: $technicien)';
   }
 
   @override
@@ -315,6 +345,8 @@ class _$EntretienModelImpl implements _EntretienModel {
         (other.runtimeType == runtimeType &&
             other is _$EntretienModelImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.immobilisationId, immobilisationId) ||
+                other.immobilisationId == immobilisationId) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.titre, titre) || other.titre == titre) &&
             (identical(other.cout, cout) || other.cout == cout) &&
@@ -341,6 +373,7 @@ class _$EntretienModelImpl implements _EntretienModel {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    immobilisationId,
     date,
     titre,
     cout,
@@ -374,16 +407,17 @@ class _$EntretienModelImpl implements _EntretienModel {
 abstract class _EntretienModel implements EntretienModel {
   const factory _EntretienModel({
     required final String id,
+    @JsonKey(name: 'immobilisation_id') final String? immobilisationId,
     required final DateTime date,
     required final String titre,
-    required final double cout,
+    @JsonKey(fromJson: parseFlexibleDouble) required final double cout,
     required final String prestataire,
     final String? observation,
-    final String? bonCommandeRef,
-    final String? bonLivraisonRef,
-    final String? factureRef,
-    final String? dossierRef,
-    final String? dureeIntervention,
+    @JsonKey(name: 'bon_commande_ref') final String? bonCommandeRef,
+    @JsonKey(name: 'bon_livraison_ref') final String? bonLivraisonRef,
+    @JsonKey(name: 'facture_ref') final String? factureRef,
+    @JsonKey(name: 'dossier_ref') final String? dossierRef,
+    @JsonKey(name: 'duree_intervention') final String? dureeIntervention,
     final String? technicien,
   }) = _$EntretienModelImpl;
 
@@ -393,24 +427,33 @@ abstract class _EntretienModel implements EntretienModel {
   @override
   String get id;
   @override
+  @JsonKey(name: 'immobilisation_id')
+  String? get immobilisationId;
+  @override
   DateTime get date;
   @override
   String get titre;
   @override
+  @JsonKey(fromJson: parseFlexibleDouble)
   double get cout;
   @override
   String get prestataire;
   @override
   String? get observation;
   @override
+  @JsonKey(name: 'bon_commande_ref')
   String? get bonCommandeRef;
   @override
+  @JsonKey(name: 'bon_livraison_ref')
   String? get bonLivraisonRef;
   @override
+  @JsonKey(name: 'facture_ref')
   String? get factureRef;
   @override
+  @JsonKey(name: 'dossier_ref')
   String? get dossierRef;
   @override
+  @JsonKey(name: 'duree_intervention')
   String? get dureeIntervention;
   @override
   String? get technicien;

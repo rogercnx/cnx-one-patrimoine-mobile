@@ -22,10 +22,13 @@ AttributionModel _$AttributionModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$AttributionModel {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'immobilisation_id')
+  String? get immobilisationId => throw _privateConstructorUsedError;
   DateTime get date => throw _privateConstructorUsedError;
   String get detenteur => throw _privateConstructorUsedError;
   String get lieu => throw _privateConstructorUsedError;
   String get motif => throw _privateConstructorUsedError;
+  @JsonKey(name: 'acte_reference')
   String get acteReference => throw _privateConstructorUsedError;
 
   /// Serializes this AttributionModel to a JSON map.
@@ -47,11 +50,12 @@ abstract class $AttributionModelCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    @JsonKey(name: 'immobilisation_id') String? immobilisationId,
     DateTime date,
     String detenteur,
     String lieu,
     String motif,
-    String acteReference,
+    @JsonKey(name: 'acte_reference') String acteReference,
   });
 }
 
@@ -71,6 +75,7 @@ class _$AttributionModelCopyWithImpl<$Res, $Val extends AttributionModel>
   @override
   $Res call({
     Object? id = null,
+    Object? immobilisationId = freezed,
     Object? date = null,
     Object? detenteur = null,
     Object? lieu = null,
@@ -83,6 +88,10 @@ class _$AttributionModelCopyWithImpl<$Res, $Val extends AttributionModel>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
+            immobilisationId: freezed == immobilisationId
+                ? _value.immobilisationId
+                : immobilisationId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             date: null == date
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
@@ -120,11 +129,12 @@ abstract class _$$AttributionModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    @JsonKey(name: 'immobilisation_id') String? immobilisationId,
     DateTime date,
     String detenteur,
     String lieu,
     String motif,
-    String acteReference,
+    @JsonKey(name: 'acte_reference') String acteReference,
   });
 }
 
@@ -143,6 +153,7 @@ class __$$AttributionModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? immobilisationId = freezed,
     Object? date = null,
     Object? detenteur = null,
     Object? lieu = null,
@@ -155,6 +166,10 @@ class __$$AttributionModelImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
+        immobilisationId: freezed == immobilisationId
+            ? _value.immobilisationId
+            : immobilisationId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         date: null == date
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
@@ -185,11 +200,12 @@ class __$$AttributionModelImplCopyWithImpl<$Res>
 class _$AttributionModelImpl implements _AttributionModel {
   const _$AttributionModelImpl({
     required this.id,
+    @JsonKey(name: 'immobilisation_id') this.immobilisationId,
     required this.date,
     required this.detenteur,
     required this.lieu,
     required this.motif,
-    required this.acteReference,
+    @JsonKey(name: 'acte_reference') required this.acteReference,
   });
 
   factory _$AttributionModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -197,6 +213,9 @@ class _$AttributionModelImpl implements _AttributionModel {
 
   @override
   final String id;
+  @override
+  @JsonKey(name: 'immobilisation_id')
+  final String? immobilisationId;
   @override
   final DateTime date;
   @override
@@ -206,11 +225,12 @@ class _$AttributionModelImpl implements _AttributionModel {
   @override
   final String motif;
   @override
+  @JsonKey(name: 'acte_reference')
   final String acteReference;
 
   @override
   String toString() {
-    return 'AttributionModel(id: $id, date: $date, detenteur: $detenteur, lieu: $lieu, motif: $motif, acteReference: $acteReference)';
+    return 'AttributionModel(id: $id, immobilisationId: $immobilisationId, date: $date, detenteur: $detenteur, lieu: $lieu, motif: $motif, acteReference: $acteReference)';
   }
 
   @override
@@ -219,6 +239,8 @@ class _$AttributionModelImpl implements _AttributionModel {
         (other.runtimeType == runtimeType &&
             other is _$AttributionModelImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.immobilisationId, immobilisationId) ||
+                other.immobilisationId == immobilisationId) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.detenteur, detenteur) ||
                 other.detenteur == detenteur) &&
@@ -230,8 +252,16 @@ class _$AttributionModelImpl implements _AttributionModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, date, detenteur, lieu, motif, acteReference);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    immobilisationId,
+    date,
+    detenteur,
+    lieu,
+    motif,
+    acteReference,
+  );
 
   /// Create a copy of AttributionModel
   /// with the given fields replaced by the non-null parameter values.
@@ -253,11 +283,12 @@ class _$AttributionModelImpl implements _AttributionModel {
 abstract class _AttributionModel implements AttributionModel {
   const factory _AttributionModel({
     required final String id,
+    @JsonKey(name: 'immobilisation_id') final String? immobilisationId,
     required final DateTime date,
     required final String detenteur,
     required final String lieu,
     required final String motif,
-    required final String acteReference,
+    @JsonKey(name: 'acte_reference') required final String acteReference,
   }) = _$AttributionModelImpl;
 
   factory _AttributionModel.fromJson(Map<String, dynamic> json) =
@@ -265,6 +296,9 @@ abstract class _AttributionModel implements AttributionModel {
 
   @override
   String get id;
+  @override
+  @JsonKey(name: 'immobilisation_id')
+  String? get immobilisationId;
   @override
   DateTime get date;
   @override
@@ -274,6 +308,7 @@ abstract class _AttributionModel implements AttributionModel {
   @override
   String get motif;
   @override
+  @JsonKey(name: 'acte_reference')
   String get acteReference;
 
   /// Create a copy of AttributionModel

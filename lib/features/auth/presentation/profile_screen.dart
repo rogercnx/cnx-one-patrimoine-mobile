@@ -68,11 +68,7 @@ class _ProfileContent extends ConsumerWidget {
 
   final UserModel user;
 
-  String get _displayName {
-    if (user.name != null && user.name!.trim().isNotEmpty) return user.name!.trim();
-    final composed = [user.firstName, user.lastName].whereType<String>().where((s) => s.trim().isNotEmpty).join(' ');
-    return composed.isNotEmpty ? composed : user.email;
-  }
+  String get _displayName => user.name.trim().isNotEmpty ? user.name.trim() : user.email;
 
   String get _initiales {
     final parts = _displayName.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
@@ -109,11 +105,9 @@ class _ProfileContent extends ConsumerWidget {
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
-              _InfoRow(icon: Icons.mail_outline_rounded, label: 'Email', value: user.email, showDivider: user.phone != null || user.tenantSlug != null),
-              if (user.phone != null)
-                _InfoRow(icon: Icons.call_outlined, label: 'Téléphone', value: user.phone!, showDivider: user.tenantSlug != null),
-              if (user.tenantSlug != null)
-                _InfoRow(icon: Icons.business_outlined, label: 'Organisation', value: user.tenantSlug!, showDivider: false),
+              _InfoRow(icon: Icons.mail_outline_rounded, label: 'Email', value: user.email, showDivider: true),
+              if (user.phone != null) _InfoRow(icon: Icons.call_outlined, label: 'Téléphone', value: user.phone!, showDivider: true),
+              _InfoRow(icon: Icons.business_outlined, label: 'Organisation', value: user.tenantName ?? user.tenantSlug, showDivider: false),
             ],
           ),
         ),

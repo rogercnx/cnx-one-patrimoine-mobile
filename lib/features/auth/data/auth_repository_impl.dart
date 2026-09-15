@@ -10,12 +10,13 @@ import 'models/user_model.dart';
 
 /// Implémentation réelle de [AuthRepository] contre `backend.zira24.com`.
 ///
-/// ⚠️ Voir `user_model.dart` : la forme exacte des réponses de succès de
-/// `/auth/login` et `/auth/refresh` n'est pas documentée par l'OpenAPI du
-/// backend. Le parsing ci-dessous suppose `{ accessToken, refreshToken,
-/// user: {...} }` (convention JWT standard, cohérente avec le champ
-/// `refreshToken` confirmé côté requête de `/auth/refresh`) — à corriger
-/// dans [_extractSession] dès réception d'un exemple réel.
+/// Forme de `POST /auth/login` confirmée par appel réel (compte `dev-seeg`) :
+/// `{ accessToken, refreshToken, sessionId, user: {...} }` — voir
+/// `user_model.dart` pour le détail des champs de `user`. `sessionId` est
+/// présent au même niveau que `accessToken`/`refreshToken` mais n'est
+/// consommé par aucun appel actuel (`/auth/refresh` ne prend que
+/// `refreshToken`, cf. `AuthInterceptor`) : volontairement ignoré ici plutôt
+/// qu'étendre l'interface pour une donnée sans consommateur.
 class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({required Dio dio, required SecureStorageService secureStorage})
       : _dio = dio,

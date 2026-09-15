@@ -25,8 +25,15 @@ mixin _$SiteModel {
   String get code => throw _privateConstructorUsedError;
   String get nom => throw _privateConstructorUsedError;
   String get ville => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: parseFlexibleDouble)
   double get latitude => throw _privateConstructorUsedError;
-  double get longitude => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: parseFlexibleDouble)
+  double get longitude => throw _privateConstructorUsedError; // Nullable : présents sur toutes les réponses réelles mais non fournis
+  // par les données mock existantes (non exploités par l'UI aujourd'hui).
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this SiteModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,8 +55,10 @@ abstract class $SiteModelCopyWith<$Res> {
     String code,
     String nom,
     String ville,
-    double latitude,
-    double longitude,
+    @JsonKey(fromJson: parseFlexibleDouble) double latitude,
+    @JsonKey(fromJson: parseFlexibleDouble) double longitude,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
   });
 }
 
@@ -74,6 +83,8 @@ class _$SiteModelCopyWithImpl<$Res, $Val extends SiteModel>
     Object? ville = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -101,6 +112,14 @@ class _$SiteModelCopyWithImpl<$Res, $Val extends SiteModel>
                 ? _value.longitude
                 : longitude // ignore: cast_nullable_to_non_nullable
                       as double,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
           )
           as $Val,
     );
@@ -121,8 +140,10 @@ abstract class _$$SiteModelImplCopyWith<$Res>
     String code,
     String nom,
     String ville,
-    double latitude,
-    double longitude,
+    @JsonKey(fromJson: parseFlexibleDouble) double latitude,
+    @JsonKey(fromJson: parseFlexibleDouble) double longitude,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
   });
 }
 
@@ -146,6 +167,8 @@ class __$$SiteModelImplCopyWithImpl<$Res>
     Object? ville = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _$SiteModelImpl(
@@ -173,6 +196,14 @@ class __$$SiteModelImplCopyWithImpl<$Res>
             ? _value.longitude
             : longitude // ignore: cast_nullable_to_non_nullable
                   as double,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
       ),
     );
   }
@@ -186,8 +217,10 @@ class _$SiteModelImpl implements _SiteModel {
     required this.code,
     required this.nom,
     required this.ville,
-    required this.latitude,
-    required this.longitude,
+    @JsonKey(fromJson: parseFlexibleDouble) required this.latitude,
+    @JsonKey(fromJson: parseFlexibleDouble) required this.longitude,
+    @JsonKey(name: 'created_at') this.createdAt,
+    @JsonKey(name: 'updated_at') this.updatedAt,
   });
 
   factory _$SiteModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -202,13 +235,23 @@ class _$SiteModelImpl implements _SiteModel {
   @override
   final String ville;
   @override
+  @JsonKey(fromJson: parseFlexibleDouble)
   final double latitude;
   @override
+  @JsonKey(fromJson: parseFlexibleDouble)
   final double longitude;
+  // Nullable : présents sur toutes les réponses réelles mais non fournis
+  // par les données mock existantes (non exploités par l'UI aujourd'hui).
+  @override
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
+  @override
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'SiteModel(id: $id, code: $code, nom: $nom, ville: $ville, latitude: $latitude, longitude: $longitude)';
+    return 'SiteModel(id: $id, code: $code, nom: $nom, ville: $ville, latitude: $latitude, longitude: $longitude, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -223,13 +266,26 @@ class _$SiteModelImpl implements _SiteModel {
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude));
+                other.longitude == longitude) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, code, nom, ville, latitude, longitude);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    code,
+    nom,
+    ville,
+    latitude,
+    longitude,
+    createdAt,
+    updatedAt,
+  );
 
   /// Create a copy of SiteModel
   /// with the given fields replaced by the non-null parameter values.
@@ -251,8 +307,10 @@ abstract class _SiteModel implements SiteModel {
     required final String code,
     required final String nom,
     required final String ville,
-    required final double latitude,
-    required final double longitude,
+    @JsonKey(fromJson: parseFlexibleDouble) required final double latitude,
+    @JsonKey(fromJson: parseFlexibleDouble) required final double longitude,
+    @JsonKey(name: 'created_at') final DateTime? createdAt,
+    @JsonKey(name: 'updated_at') final DateTime? updatedAt,
   }) = _$SiteModelImpl;
 
   factory _SiteModel.fromJson(Map<String, dynamic> json) =
@@ -267,9 +325,18 @@ abstract class _SiteModel implements SiteModel {
   @override
   String get ville;
   @override
+  @JsonKey(fromJson: parseFlexibleDouble)
   double get latitude;
   @override
-  double get longitude;
+  @JsonKey(fromJson: parseFlexibleDouble)
+  double get longitude; // Nullable : présents sur toutes les réponses réelles mais non fournis
+  // par les données mock existantes (non exploités par l'UI aujourd'hui).
+  @override
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt;
+  @override
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt;
 
   /// Create a copy of SiteModel
   /// with the given fields replaced by the non-null parameter values.

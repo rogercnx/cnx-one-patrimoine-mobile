@@ -12,8 +12,14 @@ _$SiteModelImpl _$$SiteModelImplFromJson(Map<String, dynamic> json) =>
       code: json['code'] as String,
       nom: json['nom'] as String,
       ville: json['ville'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
+      latitude: parseFlexibleDouble(json['latitude']),
+      longitude: parseFlexibleDouble(json['longitude']),
+      createdAt: json['created_at'] == null
+          ? null
+          : DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] == null
+          ? null
+          : DateTime.parse(json['updated_at'] as String),
     );
 
 Map<String, dynamic> _$$SiteModelImplToJson(_$SiteModelImpl instance) =>
@@ -24,4 +30,6 @@ Map<String, dynamic> _$$SiteModelImplToJson(_$SiteModelImpl instance) =>
       'ville': instance.ville,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
     };

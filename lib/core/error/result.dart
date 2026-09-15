@@ -55,6 +55,19 @@ final class TwoFactorRequiredException extends AppException {
   const TwoFactorRequiredException() : super('Code de vérification à deux facteurs requis.');
 }
 
+/// `409` sur `POST /campagnes/:id/comptages` — la campagne est `cloturee`.
+/// Confirmé par la doc Seven (2026-09-15, schémas Patrimoine).
+final class CampagneClotureeException extends AppException {
+  const CampagneClotureeException() : super('Cette campagne est clôturée, le comptage ne peut plus être enregistré.');
+}
+
+/// `409 DOSSIER_HORS_GROUPE_SORTIE` sur `POST /dossiers/:id/sortie` — le
+/// dossier n'appartient pas au groupe `sortie`. Confirmé par la doc Seven
+/// (2026-09-15, schémas Patrimoine).
+final class DossierHorsGroupeSortieException extends AppException {
+  const DossierHorsGroupeSortieException() : super("Ce dossier n'appartient pas au circuit de sortie.");
+}
+
 /// Déballe un [Result] : renvoie la donnée en cas de succès, relance
 /// l'[AppException] sinon — pour laisser `FutureProvider`/`AsyncNotifier`
 /// capturer nativement l'échec dans un `AsyncValue.error`.

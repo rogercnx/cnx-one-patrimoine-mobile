@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../theme/app_colors.dart';
 import '../../data/models/immobilisation_enums.dart';
+import '../../data/models/patrimoine_enums.dart';
 
 /// Carte de base (fond blanc, bord clair, ombre légère) — équivalent du
 /// `PinvCard` du design de référence.
@@ -120,6 +121,35 @@ extension ResultatComptageStyle on ResultatComptage {
         ResultatComptage.lieu => Icons.place_rounded,
         ResultatComptage.affect => Icons.group_rounded,
         ResultatComptage.introuvable => Icons.warning_amber_rounded,
+      };
+}
+
+/// Résultat réel d'un comptage (`ok`/`ecart`/`introuvable`, vrai schéma
+/// `inventaire_comptages`) — pendant de [ResultatComptageStyle] mais sans
+/// les sous-cas UI-only (`etat`/`lieu`/`affect`, jamais envoyés au backend).
+extension ResultatInventaireStyle on ResultatInventaire {
+  Color get color => switch (this) {
+        ResultatInventaire.ok => AppColors.good,
+        ResultatInventaire.ecart => AppColors.warn,
+        ResultatInventaire.introuvable => AppColors.bad,
+      };
+
+  Color get background => switch (this) {
+        ResultatInventaire.ok => AppColors.goodBg,
+        ResultatInventaire.ecart => AppColors.warnBg,
+        ResultatInventaire.introuvable => AppColors.badBg,
+      };
+
+  IconData get icon => switch (this) {
+        ResultatInventaire.ok => Icons.check_rounded,
+        ResultatInventaire.ecart => Icons.edit_rounded,
+        ResultatInventaire.introuvable => Icons.warning_amber_rounded,
+      };
+
+  String get label => switch (this) {
+        ResultatInventaire.ok => 'Conforme',
+        ResultatInventaire.ecart => 'Écart',
+        ResultatInventaire.introuvable => 'Introuvable',
       };
 }
 

@@ -24,11 +24,20 @@ mixin _$CampagneModel {
   String get id => throw _privateConstructorUsedError;
   String get reference => throw _privateConstructorUsedError;
   String get libelle => throw _privateConstructorUsedError;
+  @JsonKey(name: 'date_debut')
   DateTime get dateDebut => throw _privateConstructorUsedError;
-  DateTime get dateFin => throw _privateConstructorUsedError;
-  String get perimetre => throw _privateConstructorUsedError;
+  @JsonKey(name: 'date_fin')
+  DateTime? get dateFin => throw _privateConstructorUsedError;
+  String? get perimetre => throw _privateConstructorUsedError;
   StatutCampagne get statut => throw _privateConstructorUsedError;
-  String get responsable => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
+  bool get gel => throw _privateConstructorUsedError;
+  @JsonKey(name: 'perimetre_site_id')
+  String? get perimetreSiteId => throw _privateConstructorUsedError;
+  String? get responsable => throw _privateConstructorUsedError;
 
   /// Serializes this CampagneModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -51,11 +60,15 @@ abstract class $CampagneModelCopyWith<$Res> {
     String id,
     String reference,
     String libelle,
-    DateTime dateDebut,
-    DateTime dateFin,
-    String perimetre,
+    @JsonKey(name: 'date_debut') DateTime dateDebut,
+    @JsonKey(name: 'date_fin') DateTime? dateFin,
+    String? perimetre,
     StatutCampagne statut,
-    String responsable,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    bool gel,
+    @JsonKey(name: 'perimetre_site_id') String? perimetreSiteId,
+    String? responsable,
   });
 }
 
@@ -78,10 +91,14 @@ class _$CampagneModelCopyWithImpl<$Res, $Val extends CampagneModel>
     Object? reference = null,
     Object? libelle = null,
     Object? dateDebut = null,
-    Object? dateFin = null,
-    Object? perimetre = null,
+    Object? dateFin = freezed,
+    Object? perimetre = freezed,
     Object? statut = null,
-    Object? responsable = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+    Object? gel = null,
+    Object? perimetreSiteId = freezed,
+    Object? responsable = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -101,22 +118,38 @@ class _$CampagneModelCopyWithImpl<$Res, $Val extends CampagneModel>
                 ? _value.dateDebut
                 : dateDebut // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            dateFin: null == dateFin
+            dateFin: freezed == dateFin
                 ? _value.dateFin
                 : dateFin // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            perimetre: null == perimetre
+                      as DateTime?,
+            perimetre: freezed == perimetre
                 ? _value.perimetre
                 : perimetre // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             statut: null == statut
                 ? _value.statut
                 : statut // ignore: cast_nullable_to_non_nullable
                       as StatutCampagne,
-            responsable: null == responsable
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            gel: null == gel
+                ? _value.gel
+                : gel // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            perimetreSiteId: freezed == perimetreSiteId
+                ? _value.perimetreSiteId
+                : perimetreSiteId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            responsable: freezed == responsable
                 ? _value.responsable
                 : responsable // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
           )
           as $Val,
     );
@@ -136,11 +169,15 @@ abstract class _$$CampagneModelImplCopyWith<$Res>
     String id,
     String reference,
     String libelle,
-    DateTime dateDebut,
-    DateTime dateFin,
-    String perimetre,
+    @JsonKey(name: 'date_debut') DateTime dateDebut,
+    @JsonKey(name: 'date_fin') DateTime? dateFin,
+    String? perimetre,
     StatutCampagne statut,
-    String responsable,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    bool gel,
+    @JsonKey(name: 'perimetre_site_id') String? perimetreSiteId,
+    String? responsable,
   });
 }
 
@@ -162,10 +199,14 @@ class __$$CampagneModelImplCopyWithImpl<$Res>
     Object? reference = null,
     Object? libelle = null,
     Object? dateDebut = null,
-    Object? dateFin = null,
-    Object? perimetre = null,
+    Object? dateFin = freezed,
+    Object? perimetre = freezed,
     Object? statut = null,
-    Object? responsable = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+    Object? gel = null,
+    Object? perimetreSiteId = freezed,
+    Object? responsable = freezed,
   }) {
     return _then(
       _$CampagneModelImpl(
@@ -185,22 +226,38 @@ class __$$CampagneModelImplCopyWithImpl<$Res>
             ? _value.dateDebut
             : dateDebut // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        dateFin: null == dateFin
+        dateFin: freezed == dateFin
             ? _value.dateFin
             : dateFin // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        perimetre: null == perimetre
+                  as DateTime?,
+        perimetre: freezed == perimetre
             ? _value.perimetre
             : perimetre // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         statut: null == statut
             ? _value.statut
             : statut // ignore: cast_nullable_to_non_nullable
                   as StatutCampagne,
-        responsable: null == responsable
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        gel: null == gel
+            ? _value.gel
+            : gel // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        perimetreSiteId: freezed == perimetreSiteId
+            ? _value.perimetreSiteId
+            : perimetreSiteId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        responsable: freezed == responsable
             ? _value.responsable
             : responsable // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
       ),
     );
   }
@@ -213,11 +270,15 @@ class _$CampagneModelImpl extends _CampagneModel {
     required this.id,
     required this.reference,
     required this.libelle,
-    required this.dateDebut,
-    required this.dateFin,
-    required this.perimetre,
+    @JsonKey(name: 'date_debut') required this.dateDebut,
+    @JsonKey(name: 'date_fin') this.dateFin,
+    this.perimetre,
     required this.statut,
-    required this.responsable,
+    @JsonKey(name: 'created_at') this.createdAt,
+    @JsonKey(name: 'updated_at') this.updatedAt,
+    this.gel = false,
+    @JsonKey(name: 'perimetre_site_id') this.perimetreSiteId,
+    this.responsable,
   }) : super._();
 
   factory _$CampagneModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -230,19 +291,33 @@ class _$CampagneModelImpl extends _CampagneModel {
   @override
   final String libelle;
   @override
+  @JsonKey(name: 'date_debut')
   final DateTime dateDebut;
   @override
-  final DateTime dateFin;
+  @JsonKey(name: 'date_fin')
+  final DateTime? dateFin;
   @override
-  final String perimetre;
+  final String? perimetre;
   @override
   final StatutCampagne statut;
   @override
-  final String responsable;
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
+  @override
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
+  @override
+  @JsonKey()
+  final bool gel;
+  @override
+  @JsonKey(name: 'perimetre_site_id')
+  final String? perimetreSiteId;
+  @override
+  final String? responsable;
 
   @override
   String toString() {
-    return 'CampagneModel(id: $id, reference: $reference, libelle: $libelle, dateDebut: $dateDebut, dateFin: $dateFin, perimetre: $perimetre, statut: $statut, responsable: $responsable)';
+    return 'CampagneModel(id: $id, reference: $reference, libelle: $libelle, dateDebut: $dateDebut, dateFin: $dateFin, perimetre: $perimetre, statut: $statut, createdAt: $createdAt, updatedAt: $updatedAt, gel: $gel, perimetreSiteId: $perimetreSiteId, responsable: $responsable)';
   }
 
   @override
@@ -260,6 +335,13 @@ class _$CampagneModelImpl extends _CampagneModel {
             (identical(other.perimetre, perimetre) ||
                 other.perimetre == perimetre) &&
             (identical(other.statut, statut) || other.statut == statut) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.gel, gel) || other.gel == gel) &&
+            (identical(other.perimetreSiteId, perimetreSiteId) ||
+                other.perimetreSiteId == perimetreSiteId) &&
             (identical(other.responsable, responsable) ||
                 other.responsable == responsable));
   }
@@ -275,6 +357,10 @@ class _$CampagneModelImpl extends _CampagneModel {
     dateFin,
     perimetre,
     statut,
+    createdAt,
+    updatedAt,
+    gel,
+    perimetreSiteId,
     responsable,
   );
 
@@ -297,11 +383,15 @@ abstract class _CampagneModel extends CampagneModel {
     required final String id,
     required final String reference,
     required final String libelle,
-    required final DateTime dateDebut,
-    required final DateTime dateFin,
-    required final String perimetre,
+    @JsonKey(name: 'date_debut') required final DateTime dateDebut,
+    @JsonKey(name: 'date_fin') final DateTime? dateFin,
+    final String? perimetre,
     required final StatutCampagne statut,
-    required final String responsable,
+    @JsonKey(name: 'created_at') final DateTime? createdAt,
+    @JsonKey(name: 'updated_at') final DateTime? updatedAt,
+    final bool gel,
+    @JsonKey(name: 'perimetre_site_id') final String? perimetreSiteId,
+    final String? responsable,
   }) = _$CampagneModelImpl;
   const _CampagneModel._() : super._();
 
@@ -315,15 +405,28 @@ abstract class _CampagneModel extends CampagneModel {
   @override
   String get libelle;
   @override
+  @JsonKey(name: 'date_debut')
   DateTime get dateDebut;
   @override
-  DateTime get dateFin;
+  @JsonKey(name: 'date_fin')
+  DateTime? get dateFin;
   @override
-  String get perimetre;
+  String? get perimetre;
   @override
   StatutCampagne get statut;
   @override
-  String get responsable;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt;
+  @override
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt;
+  @override
+  bool get gel;
+  @override
+  @JsonKey(name: 'perimetre_site_id')
+  String? get perimetreSiteId;
+  @override
+  String? get responsable;
 
   /// Create a copy of CampagneModel
   /// with the given fields replaced by the non-null parameter values.

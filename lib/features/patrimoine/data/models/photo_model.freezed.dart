@@ -22,6 +22,8 @@ PhotoModel _$PhotoModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$PhotoModel {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'immobilisation_id')
+  String? get immobilisationId => throw _privateConstructorUsedError;
   DateTime get date => throw _privateConstructorUsedError;
   String get titre => throw _privateConstructorUsedError;
   String? get message => throw _privateConstructorUsedError;
@@ -47,6 +49,7 @@ abstract class $PhotoModelCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    @JsonKey(name: 'immobilisation_id') String? immobilisationId,
     DateTime date,
     String titre,
     String? message,
@@ -71,6 +74,7 @@ class _$PhotoModelCopyWithImpl<$Res, $Val extends PhotoModel>
   @override
   $Res call({
     Object? id = null,
+    Object? immobilisationId = freezed,
     Object? date = null,
     Object? titre = null,
     Object? message = freezed,
@@ -83,6 +87,10 @@ class _$PhotoModelCopyWithImpl<$Res, $Val extends PhotoModel>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
+            immobilisationId: freezed == immobilisationId
+                ? _value.immobilisationId
+                : immobilisationId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             date: null == date
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
@@ -120,6 +128,7 @@ abstract class _$$PhotoModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    @JsonKey(name: 'immobilisation_id') String? immobilisationId,
     DateTime date,
     String titre,
     String? message,
@@ -143,6 +152,7 @@ class __$$PhotoModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? immobilisationId = freezed,
     Object? date = null,
     Object? titre = null,
     Object? message = freezed,
@@ -155,6 +165,10 @@ class __$$PhotoModelImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
+        immobilisationId: freezed == immobilisationId
+            ? _value.immobilisationId
+            : immobilisationId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         date: null == date
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
@@ -185,11 +199,12 @@ class __$$PhotoModelImplCopyWithImpl<$Res>
 class _$PhotoModelImpl implements _PhotoModel {
   const _$PhotoModelImpl({
     required this.id,
+    @JsonKey(name: 'immobilisation_id') this.immobilisationId,
     required this.date,
     required this.titre,
     this.message,
     required this.auteur,
-    required this.nombreFichiers,
+    this.nombreFichiers = 0,
   });
 
   factory _$PhotoModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -197,6 +212,9 @@ class _$PhotoModelImpl implements _PhotoModel {
 
   @override
   final String id;
+  @override
+  @JsonKey(name: 'immobilisation_id')
+  final String? immobilisationId;
   @override
   final DateTime date;
   @override
@@ -206,11 +224,12 @@ class _$PhotoModelImpl implements _PhotoModel {
   @override
   final String auteur;
   @override
+  @JsonKey()
   final int nombreFichiers;
 
   @override
   String toString() {
-    return 'PhotoModel(id: $id, date: $date, titre: $titre, message: $message, auteur: $auteur, nombreFichiers: $nombreFichiers)';
+    return 'PhotoModel(id: $id, immobilisationId: $immobilisationId, date: $date, titre: $titre, message: $message, auteur: $auteur, nombreFichiers: $nombreFichiers)';
   }
 
   @override
@@ -219,6 +238,8 @@ class _$PhotoModelImpl implements _PhotoModel {
         (other.runtimeType == runtimeType &&
             other is _$PhotoModelImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.immobilisationId, immobilisationId) ||
+                other.immobilisationId == immobilisationId) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.titre, titre) || other.titre == titre) &&
             (identical(other.message, message) || other.message == message) &&
@@ -232,6 +253,7 @@ class _$PhotoModelImpl implements _PhotoModel {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    immobilisationId,
     date,
     titre,
     message,
@@ -256,11 +278,12 @@ class _$PhotoModelImpl implements _PhotoModel {
 abstract class _PhotoModel implements PhotoModel {
   const factory _PhotoModel({
     required final String id,
+    @JsonKey(name: 'immobilisation_id') final String? immobilisationId,
     required final DateTime date,
     required final String titre,
     final String? message,
     required final String auteur,
-    required final int nombreFichiers,
+    final int nombreFichiers,
   }) = _$PhotoModelImpl;
 
   factory _PhotoModel.fromJson(Map<String, dynamic> json) =
@@ -268,6 +291,9 @@ abstract class _PhotoModel implements PhotoModel {
 
   @override
   String get id;
+  @override
+  @JsonKey(name: 'immobilisation_id')
+  String? get immobilisationId;
   @override
   DateTime get date;
   @override

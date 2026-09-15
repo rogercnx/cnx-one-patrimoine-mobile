@@ -1,8 +1,5 @@
-import '../models/agent_model.dart';
 import '../models/attribution_model.dart';
-import '../models/campagne_historique_model.dart';
 import '../models/campagne_model.dart';
-import '../models/comptage_model.dart';
 import '../models/entretien_model.dart';
 import '../models/immobilisation_enums.dart';
 import '../models/immobilisation_model.dart';
@@ -44,15 +41,8 @@ abstract final class PatrimoineMockData {
   ];
 
   // ---------------------------------------------------------------------
-  // Agent connecté & campagne en cours
+  // Campagne en cours
   // ---------------------------------------------------------------------
-
-  static final AgentModel agentConnecte = const AgentModel(
-    id: 'usr-cella',
-    nom: 'C. Ella',
-    role: "Agent d'inventaire · Services généraux",
-    initiales: 'CE',
-  );
 
   static final CampagneModel campagneEnCours = CampagneModel(
     id: 'INV-2026-02',
@@ -64,28 +54,6 @@ abstract final class PatrimoineMockData {
     statut: StatutCampagne.enCours,
     responsable: 'C. Ella',
   );
-
-  static const List<String> affectatairesPossibles = [
-    'J. Ndong — Informatique',
-    'A. Mba — Logistique',
-    'C. Ella — Services généraux',
-    'M. Koumba — Commercial',
-    'F. Moussavou — Informatique',
-    'H. Ovono — Production',
-    'R. Nzengue — Finance',
-    'Direction générale',
-    'Logistique — usage collectif',
-    'Services généraux',
-  ];
-
-  static const Map<String, List<String>> locauxParSite = {
-    'lbv': ['Étage 2 — reprographie', 'Étage 3 — DSI', 'Étage 4 — Commercial', 'Étage 5 — Direction', 'Salle serveurs — étage 3', 'Local technique — sous-sol', 'Boulevard Triomphal', 'Local de rebut'],
-    'owe': ['Zone portuaire, lot 11', 'Zone portuaire, lot 14', 'Quai de chargement', 'Parc automobile', 'Magasin entrepôt'],
-    'pog': ['Open space commercial', 'Bureau 03', 'Réserve agence'],
-    'nkok': ['Atelier 1', 'Atelier 2', 'Zone économique spéciale', 'Magasin site'],
-    'fcv': ['Toiture agence', 'Agence Franceville', 'Bureau direction'],
-    'oye': ['Agence Oyem', 'Magasin agence — Oyem'],
-  };
 
   // ---------------------------------------------------------------------
   // Immobilisations (registre)
@@ -406,75 +374,37 @@ abstract final class PatrimoineMockData {
   // Session de comptage en cours (campagne INV-2026-02)
   // ---------------------------------------------------------------------
 
-  static final List<ComptageModel> comptagesSession = [
-    ComptageModel(immobilisationId: 'IMMO-2020-0104', resultat: ResultatComptage.ok, dateHeure: _dtCampagne(8, 12), agentNom: 'C. Ella'),
-    ComptageModel(immobilisationId: 'IMMO-2026-0813', resultat: ResultatComptage.ok, dateHeure: _dtCampagne(8, 26), agentNom: 'C. Ella'),
-    ComptageModel(
-      immobilisationId: 'IMMO-2024-0399', resultat: ResultatComptage.etat, dateHeure: _dtCampagne(9, 3), agentNom: 'C. Ella',
-      note: 'État moyen → Dégradé · batteries à nouveau faibles',
-      modification: const ComptageModification(etat: EtatBien.degrade),
-    ),
-    ComptageModel(immobilisationId: 'IMMO-2025-0644', resultat: ResultatComptage.ok, dateHeure: _dtCampagne(9, 41), agentNom: 'C. Ella'),
-    ComptageModel(
-      immobilisationId: 'IMMO-2023-0710', resultat: ResultatComptage.lieu, dateHeure: _dtCampagne(10, 15), agentNom: 'C. Ella',
-      note: 'Salle serveurs baie A → baie B',
-      modification: const ComptageModification(local: 'Salle serveurs — baie B'),
-    ),
-    ComptageModel(
-      immobilisationId: 'IMMO-2026-0451', resultat: ResultatComptage.introuvable, dateHeure: _dtCampagne(10, 38), agentNom: 'C. Ella',
-      note: 'Bien déclaré volé — dossier SOR-2026-0031',
-    ),
-    ComptageModel(immobilisationId: 'IMMO-2018-0244', resultat: ResultatComptage.ok, dateHeure: _dtCampagne(11, 2), agentNom: 'C. Ella', note: 'Présent au local de rebut'),
-  ];
-
-  static DateTime _dtCampagne(int h, int m) => DateTime(2026, 8, 24, h, m);
-
   // ---------------------------------------------------------------------
-  // Campagnes clôturées
+  // Campagnes clôturées — CampagneModel réel (statut cloturee), plus de
+  // contributions/mouvements agrégés (aucun endpoint réel ne les fournit ;
+  // décision produit actée, CLAUDE.md section 4). Le détail des comptages
+  // d'une campagne clôturée se lit désormais via `getComptagesReels`.
   // ---------------------------------------------------------------------
 
-  static final List<CampagneHistoriqueModel> campagnesCloturees = [
-    CampagneHistoriqueModel(
-      reference: 'INV-2026-01', libelle: 'Inventaire annuel 2025', periodeLabel: '23/02/2026 → 28/02/2026',
-      totalBiens: 412, biensComptes: 412, ecarts: 9, introuvables: 2,
-      contributions: const [
-        ContributionAgentModel(nom: 'C. Ella', biensComptes: 168, ecarts: 4),
-        ContributionAgentModel(nom: 'J. Ndong', biensComptes: 121, ecarts: 3),
-        ContributionAgentModel(nom: 'A. Mba', biensComptes: 87, ecarts: 2),
-        ContributionAgentModel(nom: 'M. Koumba', biensComptes: 36, ecarts: 0),
-      ],
-      mouvements: [
-        ComptageModel(immobilisationId: 'IMMO-2022-0455', resultat: ResultatComptage.lieu, dateHeure: DateTime(2026, 2, 27, 14, 20), agentNom: 'C. Ella', note: 'Agence Franceville → Agence Oyem'),
-        ComptageModel(immobilisationId: 'IMMO-2021-0270', resultat: ResultatComptage.etat, dateHeure: DateTime(2026, 2, 26, 10, 5), agentNom: 'A. Mba', note: 'Bon état → Dégradé · panne moteur'),
-        ComptageModel(immobilisationId: 'IMMO-2023-0522', resultat: ResultatComptage.ok, dateHeure: DateTime(2026, 2, 26, 9, 12), agentNom: 'A. Mba'),
-        ComptageModel(immobilisationId: 'IMMO-2019-0088', resultat: ResultatComptage.etat, dateHeure: DateTime(2026, 2, 25, 15, 44), agentNom: 'M. Koumba', note: 'Fuite fluide constatée'),
-        ComptageModel(immobilisationId: 'IMMO-2022-0311', resultat: ResultatComptage.ok, dateHeure: DateTime(2026, 2, 24, 11, 30), agentNom: 'C. Ella'),
-      ],
+  static final List<CampagneModel> campagnesCloturees = [
+    CampagneModel(
+      id: 'camp-mock-2026-01',
+      reference: 'INV-2026-01',
+      libelle: 'Inventaire annuel 2025',
+      dateDebut: _d('23/02/2026'),
+      dateFin: _d('28/02/2026'),
+      statut: StatutCampagne.cloturee,
     ),
-    CampagneHistoriqueModel(
-      reference: 'INV-2025-02', libelle: 'Inventaire tournant — sites Sud', periodeLabel: '08/09/2025 → 12/09/2025',
-      totalBiens: 96, biensComptes: 96, ecarts: 3, introuvables: 0,
-      contributions: const [
-        ContributionAgentModel(nom: 'M. Koumba', biensComptes: 61, ecarts: 2),
-        ContributionAgentModel(nom: 'C. Ella', biensComptes: 35, ecarts: 1),
-      ],
-      mouvements: [
-        ComptageModel(immobilisationId: 'IMMO-2026-0819', resultat: ResultatComptage.affect, dateHeure: DateTime(2025, 9, 10, 16, 2), agentNom: 'M. Koumba', note: 'Poste réaffecté au commercial PG'),
-        ComptageModel(immobilisationId: 'IMMO-2022-0455', resultat: ResultatComptage.ok, dateHeure: DateTime(2025, 9, 9, 8, 55), agentNom: 'C. Ella'),
-      ],
+    CampagneModel(
+      id: 'camp-mock-2025-02',
+      reference: 'INV-2025-02',
+      libelle: 'Inventaire tournant — sites Sud',
+      dateDebut: _d('08/09/2025'),
+      dateFin: _d('12/09/2025'),
+      statut: StatutCampagne.cloturee,
     ),
-    CampagneHistoriqueModel(
-      reference: 'INV-2025-01', libelle: 'Inventaire annuel 2024', periodeLabel: '24/02/2025 → 01/03/2025',
-      totalBiens: 388, biensComptes: 385, ecarts: 14, introuvables: 3,
-      contributions: const [
-        ContributionAgentModel(nom: 'C. Ella', biensComptes: 152, ecarts: 6),
-        ContributionAgentModel(nom: 'J. Ndong', biensComptes: 118, ecarts: 5),
-        ContributionAgentModel(nom: 'A. Mba', biensComptes: 115, ecarts: 3),
-      ],
-      mouvements: [
-        ComptageModel(immobilisationId: 'IMMO-2024-0188', resultat: ResultatComptage.etat, dateHeure: DateTime(2025, 2, 27, 13, 10), agentNom: 'A. Mba', note: 'Rayures et jeu au levier'),
-        ComptageModel(immobilisationId: 'IMMO-2020-0104', resultat: ResultatComptage.ok, dateHeure: DateTime(2025, 2, 25, 9, 0), agentNom: 'C. Ella'),
-      ],
+    CampagneModel(
+      id: 'camp-mock-2025-01',
+      reference: 'INV-2025-01',
+      libelle: 'Inventaire annuel 2024',
+      dateDebut: _d('24/02/2025'),
+      dateFin: _d('01/03/2025'),
+      statut: StatutCampagne.cloturee,
     ),
   ];
 }

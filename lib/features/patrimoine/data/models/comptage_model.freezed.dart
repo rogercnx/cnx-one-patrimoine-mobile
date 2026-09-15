@@ -15,250 +15,37 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-ComptageModification _$ComptageModificationFromJson(Map<String, dynamic> json) {
-  return _ComptageModification.fromJson(json);
-}
-
-/// @nodoc
-mixin _$ComptageModification {
-  EtatBien? get etat => throw _privateConstructorUsedError;
-  String? get siteId => throw _privateConstructorUsedError;
-  String? get local => throw _privateConstructorUsedError;
-  String? get affectataire => throw _privateConstructorUsedError;
-
-  /// Serializes this ComptageModification to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of ComptageModification
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ComptageModificationCopyWith<ComptageModification> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ComptageModificationCopyWith<$Res> {
-  factory $ComptageModificationCopyWith(
-    ComptageModification value,
-    $Res Function(ComptageModification) then,
-  ) = _$ComptageModificationCopyWithImpl<$Res, ComptageModification>;
-  @useResult
-  $Res call({
-    EtatBien? etat,
-    String? siteId,
-    String? local,
-    String? affectataire,
-  });
-}
-
-/// @nodoc
-class _$ComptageModificationCopyWithImpl<
-  $Res,
-  $Val extends ComptageModification
->
-    implements $ComptageModificationCopyWith<$Res> {
-  _$ComptageModificationCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of ComptageModification
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? etat = freezed,
-    Object? siteId = freezed,
-    Object? local = freezed,
-    Object? affectataire = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            etat: freezed == etat
-                ? _value.etat
-                : etat // ignore: cast_nullable_to_non_nullable
-                      as EtatBien?,
-            siteId: freezed == siteId
-                ? _value.siteId
-                : siteId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            local: freezed == local
-                ? _value.local
-                : local // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            affectataire: freezed == affectataire
-                ? _value.affectataire
-                : affectataire // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
-  }
-}
-
-/// @nodoc
-abstract class _$$ComptageModificationImplCopyWith<$Res>
-    implements $ComptageModificationCopyWith<$Res> {
-  factory _$$ComptageModificationImplCopyWith(
-    _$ComptageModificationImpl value,
-    $Res Function(_$ComptageModificationImpl) then,
-  ) = __$$ComptageModificationImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    EtatBien? etat,
-    String? siteId,
-    String? local,
-    String? affectataire,
-  });
-}
-
-/// @nodoc
-class __$$ComptageModificationImplCopyWithImpl<$Res>
-    extends _$ComptageModificationCopyWithImpl<$Res, _$ComptageModificationImpl>
-    implements _$$ComptageModificationImplCopyWith<$Res> {
-  __$$ComptageModificationImplCopyWithImpl(
-    _$ComptageModificationImpl _value,
-    $Res Function(_$ComptageModificationImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of ComptageModification
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? etat = freezed,
-    Object? siteId = freezed,
-    Object? local = freezed,
-    Object? affectataire = freezed,
-  }) {
-    return _then(
-      _$ComptageModificationImpl(
-        etat: freezed == etat
-            ? _value.etat
-            : etat // ignore: cast_nullable_to_non_nullable
-                  as EtatBien?,
-        siteId: freezed == siteId
-            ? _value.siteId
-            : siteId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        local: freezed == local
-            ? _value.local
-            : local // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        affectataire: freezed == affectataire
-            ? _value.affectataire
-            : affectataire // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$ComptageModificationImpl implements _ComptageModification {
-  const _$ComptageModificationImpl({
-    this.etat,
-    this.siteId,
-    this.local,
-    this.affectataire,
-  });
-
-  factory _$ComptageModificationImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ComptageModificationImplFromJson(json);
-
-  @override
-  final EtatBien? etat;
-  @override
-  final String? siteId;
-  @override
-  final String? local;
-  @override
-  final String? affectataire;
-
-  @override
-  String toString() {
-    return 'ComptageModification(etat: $etat, siteId: $siteId, local: $local, affectataire: $affectataire)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ComptageModificationImpl &&
-            (identical(other.etat, etat) || other.etat == etat) &&
-            (identical(other.siteId, siteId) || other.siteId == siteId) &&
-            (identical(other.local, local) || other.local == local) &&
-            (identical(other.affectataire, affectataire) ||
-                other.affectataire == affectataire));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, etat, siteId, local, affectataire);
-
-  /// Create a copy of ComptageModification
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ComptageModificationImplCopyWith<_$ComptageModificationImpl>
-  get copyWith =>
-      __$$ComptageModificationImplCopyWithImpl<_$ComptageModificationImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ComptageModificationImplToJson(this);
-  }
-}
-
-abstract class _ComptageModification implements ComptageModification {
-  const factory _ComptageModification({
-    final EtatBien? etat,
-    final String? siteId,
-    final String? local,
-    final String? affectataire,
-  }) = _$ComptageModificationImpl;
-
-  factory _ComptageModification.fromJson(Map<String, dynamic> json) =
-      _$ComptageModificationImpl.fromJson;
-
-  @override
-  EtatBien? get etat;
-  @override
-  String? get siteId;
-  @override
-  String? get local;
-  @override
-  String? get affectataire;
-
-  /// Create a copy of ComptageModification
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ComptageModificationImplCopyWith<_$ComptageModificationImpl>
-  get copyWith => throw _privateConstructorUsedError;
-}
-
 ComptageModel _$ComptageModelFromJson(Map<String, dynamic> json) {
   return _ComptageModel.fromJson(json);
 }
 
 /// @nodoc
 mixin _$ComptageModel {
+  String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'campagne_id')
+  String get campagneId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'immobilisation_id')
   String get immobilisationId => throw _privateConstructorUsedError;
-  ResultatComptage get resultat => throw _privateConstructorUsedError;
+  @JsonKey(name: 'agent_id')
+  String get agentId => throw _privateConstructorUsedError;
+  ResultatInventaire get resultat => throw _privateConstructorUsedError;
+  @JsonKey(name: 'date_heure')
   DateTime get dateHeure => throw _privateConstructorUsedError;
-  String get agentNom => throw _privateConstructorUsedError;
+  @JsonKey(name: 'etat_constate')
+  EtatBien? get etatConstate => throw _privateConstructorUsedError;
+  @JsonKey(name: 'site_constate')
+  String? get siteConstate => throw _privateConstructorUsedError;
+  @JsonKey(name: 'affectataire_constate')
+  String? get affectataireConstate => throw _privateConstructorUsedError;
   String? get note => throw _privateConstructorUsedError;
-  ComptageModification? get modification => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'zone_id')
+  String? get zoneId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'maj_corrections')
+  dynamic get majCorrections => throw _privateConstructorUsedError;
 
   /// Serializes this ComptageModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -278,15 +65,21 @@ abstract class $ComptageModelCopyWith<$Res> {
   ) = _$ComptageModelCopyWithImpl<$Res, ComptageModel>;
   @useResult
   $Res call({
-    String immobilisationId,
-    ResultatComptage resultat,
-    DateTime dateHeure,
-    String agentNom,
+    String id,
+    @JsonKey(name: 'campagne_id') String campagneId,
+    @JsonKey(name: 'immobilisation_id') String immobilisationId,
+    @JsonKey(name: 'agent_id') String agentId,
+    ResultatInventaire resultat,
+    @JsonKey(name: 'date_heure') DateTime dateHeure,
+    @JsonKey(name: 'etat_constate') EtatBien? etatConstate,
+    @JsonKey(name: 'site_constate') String? siteConstate,
+    @JsonKey(name: 'affectataire_constate') String? affectataireConstate,
     String? note,
-    ComptageModification? modification,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    @JsonKey(name: 'zone_id') String? zoneId,
+    @JsonKey(name: 'maj_corrections') dynamic majCorrections,
   });
-
-  $ComptageModificationCopyWith<$Res>? get modification;
 }
 
 /// @nodoc
@@ -304,56 +97,82 @@ class _$ComptageModelCopyWithImpl<$Res, $Val extends ComptageModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
+    Object? campagneId = null,
     Object? immobilisationId = null,
+    Object? agentId = null,
     Object? resultat = null,
     Object? dateHeure = null,
-    Object? agentNom = null,
+    Object? etatConstate = freezed,
+    Object? siteConstate = freezed,
+    Object? affectataireConstate = freezed,
     Object? note = freezed,
-    Object? modification = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+    Object? zoneId = freezed,
+    Object? majCorrections = freezed,
   }) {
     return _then(
       _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            campagneId: null == campagneId
+                ? _value.campagneId
+                : campagneId // ignore: cast_nullable_to_non_nullable
+                      as String,
             immobilisationId: null == immobilisationId
                 ? _value.immobilisationId
                 : immobilisationId // ignore: cast_nullable_to_non_nullable
                       as String,
+            agentId: null == agentId
+                ? _value.agentId
+                : agentId // ignore: cast_nullable_to_non_nullable
+                      as String,
             resultat: null == resultat
                 ? _value.resultat
                 : resultat // ignore: cast_nullable_to_non_nullable
-                      as ResultatComptage,
+                      as ResultatInventaire,
             dateHeure: null == dateHeure
                 ? _value.dateHeure
                 : dateHeure // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            agentNom: null == agentNom
-                ? _value.agentNom
-                : agentNom // ignore: cast_nullable_to_non_nullable
-                      as String,
+            etatConstate: freezed == etatConstate
+                ? _value.etatConstate
+                : etatConstate // ignore: cast_nullable_to_non_nullable
+                      as EtatBien?,
+            siteConstate: freezed == siteConstate
+                ? _value.siteConstate
+                : siteConstate // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            affectataireConstate: freezed == affectataireConstate
+                ? _value.affectataireConstate
+                : affectataireConstate // ignore: cast_nullable_to_non_nullable
+                      as String?,
             note: freezed == note
                 ? _value.note
                 : note // ignore: cast_nullable_to_non_nullable
                       as String?,
-            modification: freezed == modification
-                ? _value.modification
-                : modification // ignore: cast_nullable_to_non_nullable
-                      as ComptageModification?,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            zoneId: freezed == zoneId
+                ? _value.zoneId
+                : zoneId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            majCorrections: freezed == majCorrections
+                ? _value.majCorrections
+                : majCorrections // ignore: cast_nullable_to_non_nullable
+                      as dynamic,
           )
           as $Val,
     );
-  }
-
-  /// Create a copy of ComptageModel
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $ComptageModificationCopyWith<$Res>? get modification {
-    if (_value.modification == null) {
-      return null;
-    }
-
-    return $ComptageModificationCopyWith<$Res>(_value.modification!, (value) {
-      return _then(_value.copyWith(modification: value) as $Val);
-    });
   }
 }
 
@@ -367,16 +186,21 @@ abstract class _$$ComptageModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String immobilisationId,
-    ResultatComptage resultat,
-    DateTime dateHeure,
-    String agentNom,
+    String id,
+    @JsonKey(name: 'campagne_id') String campagneId,
+    @JsonKey(name: 'immobilisation_id') String immobilisationId,
+    @JsonKey(name: 'agent_id') String agentId,
+    ResultatInventaire resultat,
+    @JsonKey(name: 'date_heure') DateTime dateHeure,
+    @JsonKey(name: 'etat_constate') EtatBien? etatConstate,
+    @JsonKey(name: 'site_constate') String? siteConstate,
+    @JsonKey(name: 'affectataire_constate') String? affectataireConstate,
     String? note,
-    ComptageModification? modification,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    @JsonKey(name: 'zone_id') String? zoneId,
+    @JsonKey(name: 'maj_corrections') dynamic majCorrections,
   });
-
-  @override
-  $ComptageModificationCopyWith<$Res>? get modification;
 }
 
 /// @nodoc
@@ -393,39 +217,79 @@ class __$$ComptageModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
+    Object? campagneId = null,
     Object? immobilisationId = null,
+    Object? agentId = null,
     Object? resultat = null,
     Object? dateHeure = null,
-    Object? agentNom = null,
+    Object? etatConstate = freezed,
+    Object? siteConstate = freezed,
+    Object? affectataireConstate = freezed,
     Object? note = freezed,
-    Object? modification = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+    Object? zoneId = freezed,
+    Object? majCorrections = freezed,
   }) {
     return _then(
       _$ComptageModelImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        campagneId: null == campagneId
+            ? _value.campagneId
+            : campagneId // ignore: cast_nullable_to_non_nullable
+                  as String,
         immobilisationId: null == immobilisationId
             ? _value.immobilisationId
             : immobilisationId // ignore: cast_nullable_to_non_nullable
                   as String,
+        agentId: null == agentId
+            ? _value.agentId
+            : agentId // ignore: cast_nullable_to_non_nullable
+                  as String,
         resultat: null == resultat
             ? _value.resultat
             : resultat // ignore: cast_nullable_to_non_nullable
-                  as ResultatComptage,
+                  as ResultatInventaire,
         dateHeure: null == dateHeure
             ? _value.dateHeure
             : dateHeure // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        agentNom: null == agentNom
-            ? _value.agentNom
-            : agentNom // ignore: cast_nullable_to_non_nullable
-                  as String,
+        etatConstate: freezed == etatConstate
+            ? _value.etatConstate
+            : etatConstate // ignore: cast_nullable_to_non_nullable
+                  as EtatBien?,
+        siteConstate: freezed == siteConstate
+            ? _value.siteConstate
+            : siteConstate // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        affectataireConstate: freezed == affectataireConstate
+            ? _value.affectataireConstate
+            : affectataireConstate // ignore: cast_nullable_to_non_nullable
+                  as String?,
         note: freezed == note
             ? _value.note
             : note // ignore: cast_nullable_to_non_nullable
                   as String?,
-        modification: freezed == modification
-            ? _value.modification
-            : modification // ignore: cast_nullable_to_non_nullable
-                  as ComptageModification?,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        zoneId: freezed == zoneId
+            ? _value.zoneId
+            : zoneId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        majCorrections: freezed == majCorrections
+            ? _value.majCorrections
+            : majCorrections // ignore: cast_nullable_to_non_nullable
+                  as dynamic,
       ),
     );
   }
@@ -435,33 +299,68 @@ class __$$ComptageModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ComptageModelImpl implements _ComptageModel {
   const _$ComptageModelImpl({
-    required this.immobilisationId,
+    required this.id,
+    @JsonKey(name: 'campagne_id') required this.campagneId,
+    @JsonKey(name: 'immobilisation_id') required this.immobilisationId,
+    @JsonKey(name: 'agent_id') required this.agentId,
     required this.resultat,
-    required this.dateHeure,
-    required this.agentNom,
+    @JsonKey(name: 'date_heure') required this.dateHeure,
+    @JsonKey(name: 'etat_constate') this.etatConstate,
+    @JsonKey(name: 'site_constate') this.siteConstate,
+    @JsonKey(name: 'affectataire_constate') this.affectataireConstate,
     this.note,
-    this.modification,
+    @JsonKey(name: 'created_at') this.createdAt,
+    @JsonKey(name: 'updated_at') this.updatedAt,
+    @JsonKey(name: 'zone_id') this.zoneId,
+    @JsonKey(name: 'maj_corrections') this.majCorrections,
   });
 
   factory _$ComptageModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ComptageModelImplFromJson(json);
 
   @override
+  final String id;
+  @override
+  @JsonKey(name: 'campagne_id')
+  final String campagneId;
+  @override
+  @JsonKey(name: 'immobilisation_id')
   final String immobilisationId;
   @override
-  final ResultatComptage resultat;
+  @JsonKey(name: 'agent_id')
+  final String agentId;
   @override
+  final ResultatInventaire resultat;
+  @override
+  @JsonKey(name: 'date_heure')
   final DateTime dateHeure;
   @override
-  final String agentNom;
+  @JsonKey(name: 'etat_constate')
+  final EtatBien? etatConstate;
+  @override
+  @JsonKey(name: 'site_constate')
+  final String? siteConstate;
+  @override
+  @JsonKey(name: 'affectataire_constate')
+  final String? affectataireConstate;
   @override
   final String? note;
   @override
-  final ComptageModification? modification;
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
+  @override
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
+  @override
+  @JsonKey(name: 'zone_id')
+  final String? zoneId;
+  @override
+  @JsonKey(name: 'maj_corrections')
+  final dynamic majCorrections;
 
   @override
   String toString() {
-    return 'ComptageModel(immobilisationId: $immobilisationId, resultat: $resultat, dateHeure: $dateHeure, agentNom: $agentNom, note: $note, modification: $modification)';
+    return 'ComptageModel(id: $id, campagneId: $campagneId, immobilisationId: $immobilisationId, agentId: $agentId, resultat: $resultat, dateHeure: $dateHeure, etatConstate: $etatConstate, siteConstate: $siteConstate, affectataireConstate: $affectataireConstate, note: $note, createdAt: $createdAt, updatedAt: $updatedAt, zoneId: $zoneId, majCorrections: $majCorrections)';
   }
 
   @override
@@ -469,29 +368,52 @@ class _$ComptageModelImpl implements _ComptageModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ComptageModelImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.campagneId, campagneId) ||
+                other.campagneId == campagneId) &&
             (identical(other.immobilisationId, immobilisationId) ||
                 other.immobilisationId == immobilisationId) &&
+            (identical(other.agentId, agentId) || other.agentId == agentId) &&
             (identical(other.resultat, resultat) ||
                 other.resultat == resultat) &&
             (identical(other.dateHeure, dateHeure) ||
                 other.dateHeure == dateHeure) &&
-            (identical(other.agentNom, agentNom) ||
-                other.agentNom == agentNom) &&
+            (identical(other.etatConstate, etatConstate) ||
+                other.etatConstate == etatConstate) &&
+            (identical(other.siteConstate, siteConstate) ||
+                other.siteConstate == siteConstate) &&
+            (identical(other.affectataireConstate, affectataireConstate) ||
+                other.affectataireConstate == affectataireConstate) &&
             (identical(other.note, note) || other.note == note) &&
-            (identical(other.modification, modification) ||
-                other.modification == modification));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.zoneId, zoneId) || other.zoneId == zoneId) &&
+            const DeepCollectionEquality().equals(
+              other.majCorrections,
+              majCorrections,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    id,
+    campagneId,
     immobilisationId,
+    agentId,
     resultat,
     dateHeure,
-    agentNom,
+    etatConstate,
+    siteConstate,
+    affectataireConstate,
     note,
-    modification,
+    createdAt,
+    updatedAt,
+    zoneId,
+    const DeepCollectionEquality().hash(majCorrections),
   );
 
   /// Create a copy of ComptageModel
@@ -510,29 +432,64 @@ class _$ComptageModelImpl implements _ComptageModel {
 
 abstract class _ComptageModel implements ComptageModel {
   const factory _ComptageModel({
-    required final String immobilisationId,
-    required final ResultatComptage resultat,
-    required final DateTime dateHeure,
-    required final String agentNom,
+    required final String id,
+    @JsonKey(name: 'campagne_id') required final String campagneId,
+    @JsonKey(name: 'immobilisation_id') required final String immobilisationId,
+    @JsonKey(name: 'agent_id') required final String agentId,
+    required final ResultatInventaire resultat,
+    @JsonKey(name: 'date_heure') required final DateTime dateHeure,
+    @JsonKey(name: 'etat_constate') final EtatBien? etatConstate,
+    @JsonKey(name: 'site_constate') final String? siteConstate,
+    @JsonKey(name: 'affectataire_constate') final String? affectataireConstate,
     final String? note,
-    final ComptageModification? modification,
+    @JsonKey(name: 'created_at') final DateTime? createdAt,
+    @JsonKey(name: 'updated_at') final DateTime? updatedAt,
+    @JsonKey(name: 'zone_id') final String? zoneId,
+    @JsonKey(name: 'maj_corrections') final dynamic majCorrections,
   }) = _$ComptageModelImpl;
 
   factory _ComptageModel.fromJson(Map<String, dynamic> json) =
       _$ComptageModelImpl.fromJson;
 
   @override
+  String get id;
+  @override
+  @JsonKey(name: 'campagne_id')
+  String get campagneId;
+  @override
+  @JsonKey(name: 'immobilisation_id')
   String get immobilisationId;
   @override
-  ResultatComptage get resultat;
+  @JsonKey(name: 'agent_id')
+  String get agentId;
   @override
+  ResultatInventaire get resultat;
+  @override
+  @JsonKey(name: 'date_heure')
   DateTime get dateHeure;
   @override
-  String get agentNom;
+  @JsonKey(name: 'etat_constate')
+  EtatBien? get etatConstate;
+  @override
+  @JsonKey(name: 'site_constate')
+  String? get siteConstate;
+  @override
+  @JsonKey(name: 'affectataire_constate')
+  String? get affectataireConstate;
   @override
   String? get note;
   @override
-  ComptageModification? get modification;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt;
+  @override
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt;
+  @override
+  @JsonKey(name: 'zone_id')
+  String? get zoneId;
+  @override
+  @JsonKey(name: 'maj_corrections')
+  dynamic get majCorrections;
 
   /// Create a copy of ComptageModel
   /// with the given fields replaced by the non-null parameter values.

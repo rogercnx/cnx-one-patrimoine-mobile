@@ -1,26 +1,44 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/error/result.dart';
-import '../data/models/agent_model.dart';
-import '../data/models/campagne_historique_model.dart';
+import '../../auth/presentation/auth_controller.dart';
+import '../../auth/presentation/auth_providers.dart';
 import '../data/models/campagne_model.dart';
+import '../data/models/comptage_input_model.dart';
 import '../data/models/comptage_model.dart';
 import '../data/models/immobilisation_model.dart';
 import '../data/models/site_model.dart';
-import '../data/patrimoine_repository_mock.dart';
+import '../data/patrimoine_repository_impl.dart';
 import '../domain/patrimoine_repository.dart';
 
 /// Bascule mock ↔ API réelle en un seul endroit (CLAUDE.md section 2.6).
-/// Cette tâche est 100% mock : `USE_MOCK` n'est pas câblé sur un `--dart-define`
-/// pour l'instant, `PatrimoineRepositoryImpl` (Dio) n'existant pas encore.
+/// Basculé sur [PatrimoineRepositoryImpl] depuis la validation manuelle du
+/// 2026-09-15 (lecture + comptage testés en conditions réelles sur
+/// `dev-seeg`) — réutilise le `dioProvider` partagé avec Auth (mêmes
+/// intercepteurs : JWT, X-API-Key). `PatrimoineRepositoryMock` reste
+/// disponible pour les tests unitaires.
 final patrimoineRepositoryProvider = Provider<PatrimoineRepository>((ref) {
-  return PatrimoineRepositoryMock();
+  return PatrimoineRepositoryImpl(ref.watch(dioProvider));
 });
 
-final agentConnecteProvider = FutureProvider<AgentModel>((ref) async {
-  final result = await ref.watch(patrimoineRepositoryProvider).getAgentConnecte();
-  return result.unwrap();
+/// Vue d'affichage de l'agent connecté — dérivée du profil Auth
+/// (`authControllerProvider`, déjà chargé après login). Patrimoine n'a plus
+/// de notion "agent" propre : aucune route backend ne l'expose (décision
+/// produit actée, CLAUDE.md section 4).
+typedef AgentAffichage = ({String nom, String role, String initiales});
+
+final agentAffichageProvider = Provider<AgentAffichage>((ref) {
+  final user = ref.watch(authControllerProvider).valueOrNull;
+  final nom = (user != null && user.name.trim().isNotEmpty) ? user.name.trim() : (user?.email ?? '');
+  return (nom: nom, role: user?.role ?? '', initiales: _initiales(nom));
 });
+
+String _initiales(String nom) {
+  final parts = nom.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
+  if (parts.isEmpty) return '?';
+  if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+  return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
+}
 
 final campagneEnCoursProvider = FutureProvider<CampagneModel>((ref) async {
   final result = await ref.watch(patrimoineRepositoryProvider).getCampagneEnCours();
@@ -42,26 +60,25 @@ final immobilisationProvider = FutureProvider.family<ImmobilisationModel, String
   return result.unwrap();
 });
 
-final campagnesClotureesProvider = FutureProvider<List<CampagneHistoriqueModel>>((ref) async {
+/// Campagnes clôturées — `CampagneModel` réel (plus d'agrégats
+/// contributions/mouvements, aucun endpoint réel ne les fournit). Le détail
+/// d'une campagne clôturée se lit via [comptagesDeCampagneProvider].
+final campagnesClotureesProvider = FutureProvider<List<CampagneModel>>((ref) async {
   final result = await ref.watch(patrimoineRepositoryProvider).getCampagnesCloturees();
   return result.unwrap();
 });
 
-final affectatairesPossiblesProvider = FutureProvider<List<String>>((ref) async {
-  final result = await ref.watch(patrimoineRepositoryProvider).getAffectatairesPossibles();
+/// Comptages réels d'une campagne donnée (tous agents confondus) — utilisé
+/// par l'écran Historique pour le détail d'une campagne clôturée.
+final comptagesDeCampagneProvider = FutureProvider.family<List<ComptageModel>, String>((ref, campagneId) async {
+  final result = await ref.watch(patrimoineRepositoryProvider).getComptagesReels(campagneId);
   return result.unwrap();
 });
 
-final locauxDuSiteProvider = FutureProvider.family<List<String>, String>((ref, siteId) async {
-  final result = await ref.watch(patrimoineRepositoryProvider).getLocauxDuSite(siteId);
-  return result.unwrap();
-});
-
-/// Registre "statique" du module (agent connecté, campagne en cours, sites,
-/// immobilisations) — ne dépend pas de la session de comptage, donc chargé
-/// une seule fois et partagé par les 4 écrans.
+/// Registre "statique" du module (campagne en cours, sites, immobilisations)
+/// — ne dépend pas de la session de comptage, donc chargé une seule fois et
+/// partagé par les 4 écrans.
 typedef PatrimoineRegistry = ({
-  AgentModel agent,
   CampagneModel campagne,
   List<SiteModel> sites,
   List<ImmobilisationModel> immobilisations,
@@ -69,39 +86,41 @@ typedef PatrimoineRegistry = ({
 
 final patrimoineRegistryProvider = FutureProvider<PatrimoineRegistry>((ref) async {
   final repository = ref.watch(patrimoineRepositoryProvider);
-  final agentFuture = repository.getAgentConnecte();
   final campagneFuture = repository.getCampagneEnCours();
   final sitesFuture = repository.getSites();
   final immobilisationsFuture = repository.getImmobilisations();
   return (
-    agent: (await agentFuture).unwrap(),
     campagne: (await campagneFuture).unwrap(),
     sites: (await sitesFuture).unwrap(),
     immobilisations: (await immobilisationsFuture).unwrap(),
   );
 });
 
-/// Comptages de la session d'inventaire en cours — état partagé (Accueil,
-/// Scanner, Historique et Fiche détail l'observent tous), avec une action
-/// [valider] qui enregistre un pointage et met à jour l'état local sans
-/// tout recharger. Voir CLAUDE.md 2.2 : `StateNotifierProvider`/`AsyncNotifier`
-/// pour un état avec transitions.
+/// Comptages de "ma session" — désormais une simple projection serveur
+/// (`getComptagesReels`, filtrée sur l'agent connecté), plus d'état local
+/// indépendant du serveur (décision produit actée, CLAUDE.md section 4).
+/// [valider] appelle directement `validerComptage` (vrai `POST
+/// /campagnes/:id/comptages`, idempotence confirmée par appel réel).
 class ComptagesSessionNotifier extends AsyncNotifier<List<ComptageModel>> {
   @override
   Future<List<ComptageModel>> build() async {
-    final result = await ref.watch(patrimoineRepositoryProvider).getComptagesSession();
+    final userId = ref.watch(authControllerProvider).valueOrNull?.id;
+    if (userId == null) return const [];
+    final campagne = await ref.watch(campagneEnCoursProvider.future);
+    final result = await ref.watch(patrimoineRepositoryProvider).getComptagesReels(campagne.id, agentId: userId);
     return result.unwrap();
   }
 
-  Future<void> valider(ComptageModel comptage) async {
+  Future<void> valider(ComptageInput input) async {
     final repository = ref.read(patrimoineRepositoryProvider);
-    final result = await repository.validerComptage(comptage);
-    result.unwrap();
+    final campagne = await ref.read(campagneEnCoursProvider.future);
+    final result = await repository.validerComptage(campagne.id, input);
+    final nouveau = result.unwrap();
     final current = state.value ?? const [];
     state = AsyncData([
       for (final c in current)
-        if (c.immobilisationId != comptage.immobilisationId) c,
-      comptage,
+        if (c.immobilisationId != nouveau.immobilisationId) c,
+      nouveau,
     ]);
   }
 }
