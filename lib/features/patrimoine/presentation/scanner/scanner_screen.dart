@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart' as ph;
 
 import '../../../../core/error/result.dart';
 import '../../../../theme/app_breakpoints.dart';
@@ -21,12 +22,19 @@ class ScannerScreen extends ConsumerStatefulWidget {
   ConsumerState<ScannerScreen> createState() => _ScannerScreenState();
 }
 
-class _ScannerScreenState extends ConsumerState<ScannerScreen> {
+class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindingObserver {
   final _controller = MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates);
   final _codeController = TextEditingController();
   String? _erreurSaisie;
   bool _busy = false;
-  bool _cameraIndisponible = false;
+  // Cause réelle de l'échec de démarrage caméra (permission refusée, pas de
+  // caméra sur l'appareil, autre) — remplace un simple booléen pour pouvoir
+  // proposer la bonne action de récupération (CLAUDE.md : jamais de message
+  // technique brut, mais ici on distingue au moins les 2 cas récupérables).
+  MobileScannerException? _erreurCamera;
+  // `true` uniquement pendant qu'on est revenu depuis les réglages système
+  // (voir [didChangeAppLifecycleState]) — évite de retenter en boucle.
+  bool _reprisePermissionEnCours = false;
 
   // Tablette uniquement — bien affiché dans le panneau de droite (pas de
   // navigation/push, juste un changement d'état). Mis à jour à chaque build
@@ -35,10 +43,42 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   String? _selectionId;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     _codeController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Retour dans l'app après un aller-retour dans les réglages système
+    // (bouton "Ouvrir les réglages" ci-dessous) : la permission a pu être
+    // accordée entre-temps — on retente une seule fois automatiquement.
+    if (state == AppLifecycleState.resumed && _reprisePermissionEnCours) {
+      _reprisePermissionEnCours = false;
+      _reessayerCamera();
+    }
+  }
+
+  Future<void> _reessayerCamera() async {
+    setState(() => _erreurCamera = null);
+    try {
+      await _controller.start();
+    } on MobileScannerException catch (e) {
+      if (mounted) setState(() => _erreurCamera = e);
+    }
+  }
+
+  Future<void> _ouvrirReglagesSysteme() async {
+    _reprisePermissionEnCours = true;
+    await ph.openAppSettings();
   }
 
   Future<void> _ouvrirFiche(String id) async {
@@ -49,11 +89,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     setState(() => _busy = false);
     if (_tablette) {
       setState(() => _selectionId = id);
-      await _controller.start();
+      await _reessayerCamera();
       return;
     }
     context.push('/fiche/$id').then((_) {
-      if (mounted) _controller.start();
+      if (mounted) _reessayerCamera();
     });
   }
 
@@ -135,14 +175,16 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
           controller: _controller,
           busy: _busy,
           campagneRef: registry.campagne.reference,
-          onIndisponible: () => setState(() => _cameraIndisponible = true),
+          erreur: _erreurCamera,
+          onErreur: (e) => setState(() => _erreurCamera = e),
           onDetect: _onDetect,
         ),
-        if (_cameraIndisponible) ...[
+        if (_erreurCamera != null) ...[
           const SizedBox(height: 10),
-          const Text(
-            "Caméra indisponible sur cet appareil — utilisez la saisie manuelle ou la liste ci-dessous.",
-            style: TextStyle(fontSize: 11.5, color: AppColors.warn, fontWeight: FontWeight.w600),
+          _MessageErreurCamera(
+            erreur: _erreurCamera!,
+            onReessayer: _reessayerCamera,
+            onOuvrirReglages: _ouvrirReglagesSysteme,
           ),
         ],
         const SizedBox(height: 18),
@@ -219,6 +261,47 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   }
 }
 
+/// Message + action de récupération selon la vraie cause de l'échec caméra
+/// — jamais de message technique brut (CLAUDE.md), mais on distingue les
+/// deux cas réellement récupérables par l'utilisateur.
+class _MessageErreurCamera extends StatelessWidget {
+  const _MessageErreurCamera({required this.erreur, required this.onReessayer, required this.onOuvrirReglages});
+
+  final MobileScannerException erreur;
+  final VoidCallback onReessayer;
+  final VoidCallback onOuvrirReglages;
+
+  @override
+  Widget build(BuildContext context) {
+    final permissionRefusee = erreur.errorCode == MobileScannerErrorCode.permissionDenied;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: AppColors.warnBg, borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            permissionRefusee
+                ? "Accès à la caméra refusé. Autorisez-le dans les réglages pour scanner un QR code — la saisie manuelle ci-dessous reste disponible en attendant."
+                : "Aucune caméra disponible sur cet appareil — utilisez la saisie manuelle ci-dessous.",
+            style: const TextStyle(fontSize: 11.5, color: Color(0xFF8A6412), fontWeight: FontWeight.w600),
+          ),
+          if (permissionRefusee) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                TextButton(onPressed: onReessayer, child: const Text('Réessayer', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
+                const SizedBox(width: 4),
+                TextButton(onPressed: onOuvrirReglages, child: const Text('Ouvrir les réglages', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 /// État vide du panneau de droite (tablette, aucun bien sélectionné).
 class _AucuneSelection extends StatelessWidget {
   const _AucuneSelection();
@@ -273,12 +356,13 @@ class _Title extends StatelessWidget {
 }
 
 class _Viseur extends StatelessWidget {
-  const _Viseur({required this.controller, required this.busy, required this.campagneRef, required this.onIndisponible, required this.onDetect});
+  const _Viseur({required this.controller, required this.busy, required this.campagneRef, required this.erreur, required this.onErreur, required this.onDetect});
 
   final MobileScannerController controller;
   final bool busy;
   final String campagneRef;
-  final VoidCallback onIndisponible;
+  final MobileScannerException? erreur;
+  final ValueChanged<MobileScannerException> onErreur;
   final void Function(BarcodeCapture) onDetect;
 
   @override
@@ -291,49 +375,60 @@ class _Viseur extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             Container(color: const Color(0xFF16120F)),
-            MobileScanner(
-              controller: controller,
-              onDetect: onDetect,
-              errorBuilder: (context, error, child) {
-                WidgetsBinding.instance.addPostFrameCallback((_) => onIndisponible());
-                return const SizedBox.shrink();
-              },
-            ),
-            IgnorePointer(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: const Alignment(0, -0.4),
-                    radius: 1.1,
-                    colors: [Colors.black.withValues(alpha: 0.05), Colors.black.withValues(alpha: 0.55)],
+            if (erreur == null)
+              MobileScanner(
+                controller: controller,
+                onDetect: onDetect,
+                errorBuilder: (context, error, child) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) => onErreur(error));
+                  return const SizedBox.shrink();
+                },
+              )
+            else
+              Center(
+                child: Icon(
+                  erreur!.errorCode == MobileScannerErrorCode.permissionDenied ? Icons.no_photography_outlined : Icons.videocam_off_outlined,
+                  size: 32,
+                  color: Colors.white.withValues(alpha: 0.6),
+                ),
+              ),
+            if (erreur == null) ...[
+              IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: const Alignment(0, -0.4),
+                      radius: 1.1,
+                      colors: [Colors.black.withValues(alpha: 0.05), Colors.black.withValues(alpha: 0.55)],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Center(
-              child: SizedBox(
-                width: 196,
-                height: 196,
-                child: CustomPaint(painter: _CornersPainter(active: busy)),
+              Center(
+                child: SizedBox(
+                  width: 196,
+                  height: 196,
+                  child: CustomPaint(painter: _CornersPainter(active: busy)),
+                ),
               ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 18,
-              child: Column(
-                children: [
-                  Text(
-                    busy ? 'Lecture du QR code…' : "Placez l'étiquette QR dans le cadre",
-                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Colors.white),
-                  ),
-                  if (!busy) ...[
-                    const SizedBox(height: 4),
-                    Text("Douchez le cadre pour tester l'appareil photo", style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: Colors.white.withValues(alpha: 0.55))),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 18,
+                child: Column(
+                  children: [
+                    Text(
+                      busy ? 'Lecture du QR code…' : "Placez l'étiquette QR dans le cadre",
+                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Colors.white),
+                    ),
+                    if (!busy) ...[
+                      const SizedBox(height: 4),
+                      Text("Douchez le cadre pour tester l'appareil photo", style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: Colors.white.withValues(alpha: 0.55))),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
+            ],
             Positioned(
               left: 14,
               top: 14,
