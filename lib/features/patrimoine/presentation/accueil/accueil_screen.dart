@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/format/app_format.dart';
+import '../../../../theme/app_breakpoints.dart';
 import '../../../../theme/app_colors.dart';
 import '../../data/models/comptage_model.dart';
 import '../../data/models/immobilisation_model.dart';
@@ -130,6 +131,17 @@ class _AccueilContent extends StatelessWidget {
 
     final derniers = session.reversed.take(4).toList();
 
+    // Point de décision responsive local (CLAUDE.md) : grille KPI à 2
+    // colonnes (téléphone et tablette portrait, inchangé) ou 3 colonnes
+    // (tablette large / paysage) ; "avancement par site" et "derniers
+    // comptages" empilés ou côte à côte selon le même second seuil.
+    final width = MediaQuery.sizeOf(context).width;
+    final kpiColumns = isDesktopWidth(width) ? 3 : 2;
+    final cotesACote = isDesktopWidth(width);
+
+    final avancementParSite = _AvancementParSite(parSite: parSite);
+    final derniersComptages = _DerniersComptages(derniers: derniers, immoDe: _immo, onOuvrir: (id) => context.push('/fiche/$id'));
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 26),
       children: [
@@ -207,7 +219,7 @@ class _AccueilContent extends StatelessWidget {
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
+          crossAxisCount: kpiColumns,
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
           childAspectRatio: 1.7,
@@ -219,6 +231,35 @@ class _AccueilContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 20),
+        if (cotesACote)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: avancementParSite),
+              const SizedBox(width: 16),
+              Expanded(child: derniersComptages),
+            ],
+          )
+        else ...[
+          avancementParSite,
+          const SizedBox(height: 20),
+          derniersComptages,
+        ],
+      ],
+    );
+  }
+}
+
+class _AvancementParSite extends StatelessWidget {
+  const _AvancementParSite({required this.parSite});
+
+  final List<({SiteModel site, int total, int faits})> parSite;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         const SectionTitle(title: 'Avancement par site'),
         AppCard(
           padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -261,7 +302,23 @@ class _AccueilContent extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 20),
+      ],
+    );
+  }
+}
+
+class _DerniersComptages extends StatelessWidget {
+  const _DerniersComptages({required this.derniers, required this.immoDe, required this.onOuvrir});
+
+  final List<ComptageModel> derniers;
+  final ImmobilisationModel? Function(String id) immoDe;
+  final ValueChanged<String> onOuvrir;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         SectionTitle(title: 'Derniers comptages', action: "Tout l'historique", onAction: () => context.go('/historique')),
         AppCard(
           child: Column(
@@ -273,7 +330,7 @@ class _AccueilContent extends StatelessWidget {
                 ),
               for (final (i, l) in derniers.indexed)
                 InkWell(
-                  onTap: () => context.push('/fiche/${l.immobilisationId}'),
+                  onTap: () => onOuvrir(l.immobilisationId),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(
@@ -295,7 +352,7 @@ class _AccueilContent extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                _immo(l.immobilisationId)?.designation ?? l.immobilisationId,
+                                immoDe(l.immobilisationId)?.designation ?? l.immobilisationId,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),

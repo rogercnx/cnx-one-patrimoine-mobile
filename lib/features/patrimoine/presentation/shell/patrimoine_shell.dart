@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../theme/app_breakpoints.dart';
 import '../../../../theme/app_colors.dart';
 
-/// Coquille commune aux 4 onglets (Accueil, Scanner, Historique, Profil) :
-/// bottom navigation bar avec le bouton Scanner mis en avant, comme dans le
-/// design de référence (`nav` du prototype). Le 4ème onglet (Profil) relève
-/// du module Auth, pas de Patrimoine — cette coquille reste le point
-/// d'assemblage commun de la navigation applicative.
+/// Coquille commune aux 4 onglets (Accueil, Scanner, Historique, Profil).
+///
+/// Point de décision responsive local (CLAUDE.md — pas dans `main.dart`) :
+/// - `< kTabletBreakpoint` : `BottomNavigationBar` inchangée (bouton Scanner
+///   mis en avant, comme le design de référence).
+/// - `>= kTabletBreakpoint` : `NavigationRail` à gauche, mêmes 4
+///   destinations/icônes, le contenu occupe le reste de la largeur.
+///
+/// Le 4ème onglet (Profil) relève du module Auth, pas de Patrimoine — cette
+/// coquille reste le point d'assemblage commun de la navigation applicative.
 class PatrimoineShell extends StatelessWidget {
   const PatrimoineShell({super.key, required this.child});
 
@@ -20,11 +26,33 @@ class PatrimoineShell extends StatelessWidget {
     return i < 0 ? 0 : i;
   }
 
+  void _aller(BuildContext context, int index) => context.go(_tabs[index]);
+
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
     final index = _indexPour(location);
 
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (isTabletWidth(constraints.maxWidth)) {
+          return _TabletShell(index: index, onSelect: (i) => _aller(context, i), child: child);
+        }
+        return _PhoneShell(index: index, onSelect: (i) => _aller(context, i), child: child);
+      },
+    );
+  }
+}
+
+class _PhoneShell extends StatelessWidget {
+  const _PhoneShell({required this.index, required this.onSelect, required this.child});
+
+  final int index;
+  final ValueChanged<int> onSelect;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: child,
       bottomNavigationBar: DecoratedBox(
@@ -37,14 +65,52 @@ class PatrimoineShell extends StatelessWidget {
             height: 64,
             child: Row(
               children: [
-                _TabButton(icon: Icons.home_rounded, label: 'Accueil', selected: index == 0, onTap: () => context.go('/accueil')),
-                _ScanButton(selected: index == 1, onTap: () => context.go('/scanner')),
-                _TabButton(icon: Icons.history_rounded, label: 'Historique', selected: index == 2, onTap: () => context.go('/historique')),
-                _TabButton(icon: Icons.person_rounded, label: 'Profil', selected: index == 3, onTap: () => context.go('/profil')),
+                _TabButton(icon: Icons.home_rounded, label: 'Accueil', selected: index == 0, onTap: () => onSelect(0)),
+                _ScanButton(selected: index == 1, onTap: () => onSelect(1)),
+                _TabButton(icon: Icons.history_rounded, label: 'Historique', selected: index == 2, onTap: () => onSelect(2)),
+                _TabButton(icon: Icons.person_rounded, label: 'Profil', selected: index == 3, onTap: () => onSelect(3)),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _TabletShell extends StatelessWidget {
+  const _TabletShell({required this.index, required this.onSelect, required this.child});
+
+  final int index;
+  final ValueChanged<int> onSelect;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          SafeArea(
+            child: NavigationRail(
+              selectedIndex: index,
+              onDestinationSelected: onSelect,
+              backgroundColor: AppColors.card,
+              labelType: NavigationRailLabelType.all,
+              selectedIconTheme: const IconThemeData(color: AppColors.brand),
+              selectedLabelTextStyle: const TextStyle(color: AppColors.brand, fontWeight: FontWeight.w800, fontSize: 11.5),
+              unselectedIconTheme: const IconThemeData(color: AppColors.ink3),
+              unselectedLabelTextStyle: const TextStyle(color: AppColors.ink3, fontWeight: FontWeight.w600, fontSize: 11.5),
+              destinations: const [
+                NavigationRailDestination(icon: Icon(Icons.home_rounded), label: Text('Accueil')),
+                NavigationRailDestination(icon: Icon(Icons.qr_code_scanner_rounded), label: Text('Scanner')),
+                NavigationRailDestination(icon: Icon(Icons.history_rounded), label: Text('Historique')),
+                NavigationRailDestination(icon: Icon(Icons.person_rounded), label: Text('Profil')),
+              ],
+            ),
+          ),
+          const VerticalDivider(width: 1, thickness: 1, color: AppColors.line),
+          Expanded(child: child),
+        ],
       ),
     );
   }

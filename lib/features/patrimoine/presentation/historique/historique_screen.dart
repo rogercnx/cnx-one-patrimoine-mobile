@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/format/app_format.dart';
+import '../../../../theme/app_breakpoints.dart';
 import '../../../../theme/app_colors.dart';
 import '../../data/models/campagne_model.dart';
 import '../../data/models/comptage_model.dart';
 import '../../data/models/immobilisation_model.dart';
+import '../fiche/fiche_detail_screen.dart';
 import '../patrimoine_providers.dart';
 import '../shared/async_state_views.dart';
 import '../shared/patrimoine_widgets.dart';
@@ -23,9 +25,13 @@ enum _Onglet { session, campagnes }
 
 class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen> {
   _Onglet _onglet = _Onglet.session;
+  // Tablette uniquement, onglet "Ma session" — bien affiché dans le
+  // panneau de droite (pas de navigation/push, même pattern que Scanner).
+  String? _selectionId;
 
   @override
   Widget build(BuildContext context) {
+    final tablette = isTabletWidth(MediaQuery.sizeOf(context).width);
     final registryAsync = ref.watch(patrimoineRegistryProvider);
     final sessionAsync = ref.watch(comptagesSessionProvider);
     final clotureesAsync = ref.watch(campagnesClotureesProvider);
@@ -39,30 +45,106 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen> {
         data: (registry) => sessionAsync.when(
           loading: () => const LoadingView(),
           error: (e, st) => ErrorView(message: '$e', onRetry: () => ref.invalidate(comptagesSessionProvider)),
-          data: (session) => ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 26),
-            children: [
-              Container(
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(color: AppColors.sunken, borderRadius: BorderRadius.circular(12)),
-                child: Row(
-                  children: [
-                    _Segment(label: 'Ma session', selected: _onglet == _Onglet.session, onTap: () => setState(() => _onglet = _Onglet.session)),
-                    _Segment(label: 'Campagnes clôturées', selected: _onglet == _Onglet.campagnes, onTap: () => setState(() => _onglet = _Onglet.campagnes)),
-                  ],
-                ),
+          data: (session) {
+            final segments = Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(color: AppColors.sunken, borderRadius: BorderRadius.circular(12)),
+              child: Row(
+                children: [
+                  _Segment(label: 'Ma session', selected: _onglet == _Onglet.session, onTap: () => setState(() => _onglet = _Onglet.session)),
+                  _Segment(label: 'Campagnes clôturées', selected: _onglet == _Onglet.campagnes, onTap: () => setState(() => _onglet = _Onglet.campagnes)),
+                ],
               ),
-              const SizedBox(height: 16),
-              if (_onglet == _Onglet.session)
-                _SessionView(registry: registry, session: session, agentNom: agent.nom)
-              else
-                clotureesAsync.when(
-                  loading: () => const Padding(padding: EdgeInsets.only(top: 40), child: LoadingView()),
-                  error: (e, st) => ErrorView(message: '$e', onRetry: () => ref.invalidate(campagnesClotureesProvider)),
-                  data: (campagnes) => _CampagnesCloturees(campagnes: campagnes, immobilisations: registry.immobilisations),
-                ),
-            ],
-          ),
+            );
+
+            if (tablette && _onglet == _Onglet.session) {
+              return Column(
+                children: [
+                  Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 0), child: segments),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 380,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 8, 26),
+                            child: _SessionView(
+                              registry: registry,
+                              session: session,
+                              agentNom: agent.nom,
+                              selectionId: _selectionId,
+                              onOuvrir: (id) => setState(() => _selectionId = id),
+                            ),
+                          ),
+                        ),
+                        const VerticalDivider(width: 1, thickness: 1, color: AppColors.line),
+                        Expanded(
+                          child: _selectionId == null
+                              ? const _AucuneSelectionHistorique()
+                              : FicheDetailContent(
+                                  key: ValueKey(_selectionId),
+                                  immobilisationId: _selectionId!,
+                                  onFerme: () => setState(() => _selectionId = null),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 26),
+              children: [
+                segments,
+                const SizedBox(height: 16),
+                if (_onglet == _Onglet.session)
+                  _SessionView(
+                    registry: registry,
+                    session: session,
+                    agentNom: agent.nom,
+                    onOuvrir: (id) => context.push('/fiche/$id'),
+                  )
+                else
+                  clotureesAsync.when(
+                    loading: () => const Padding(padding: EdgeInsets.only(top: 40), child: LoadingView()),
+                    error: (e, st) => ErrorView(message: '$e', onRetry: () => ref.invalidate(campagnesClotureesProvider)),
+                    data: (campagnes) => _CampagnesCloturees(campagnes: campagnes, immobilisations: registry.immobilisations),
+                  ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// État vide du panneau de droite (tablette, "Ma session", aucun comptage
+/// sélectionné) — même pattern que Scanner.
+class _AucuneSelectionHistorique extends StatelessWidget {
+  const _AucuneSelectionHistorique();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(color: AppColors.sunken, borderRadius: BorderRadius.circular(16)),
+              child: const Icon(Icons.fact_check_outlined, size: 26, color: AppColors.ink3),
+            ),
+            const SizedBox(height: 14),
+            const Text('Sélectionnez un comptage pour voir le détail du bien', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.ink2), textAlign: TextAlign.center),
+          ],
         ),
       ),
     );
@@ -122,11 +204,13 @@ class _Segment extends StatelessWidget {
 }
 
 class _SessionView extends StatelessWidget {
-  const _SessionView({required this.registry, required this.session, required this.agentNom});
+  const _SessionView({required this.registry, required this.session, required this.agentNom, required this.onOuvrir, this.selectionId});
 
   final PatrimoineRegistry registry;
   final List<ComptageModel> session;
   final String agentNom;
+  final ValueChanged<String> onOuvrir;
+  final String? selectionId;
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +256,8 @@ class _SessionView extends StatelessWidget {
                         comptage: l,
                         immo: registry.immobilisations.where((m) => m.id == l.immobilisationId).firstOrNull,
                         showDivider: i != lignes.length - 1,
-                        onTap: () => context.push('/fiche/${l.immobilisationId}'),
+                        selected: selectionId == l.immobilisationId,
+                        onTap: () => onOuvrir(l.immobilisationId),
                       ),
                   ],
                 ),
@@ -332,11 +417,12 @@ class _StatCell extends StatelessWidget {
 }
 
 class _LigneComptage extends StatelessWidget {
-  const _LigneComptage({required this.comptage, required this.immo, required this.showDivider, this.onTap});
+  const _LigneComptage({required this.comptage, required this.immo, required this.showDivider, this.selected = false, this.onTap});
 
   final ComptageModel comptage;
   final ImmobilisationModel? immo;
   final bool showDivider;
+  final bool selected;
   final VoidCallback? onTap;
 
   @override
@@ -345,7 +431,10 @@ class _LigneComptage extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-        decoration: BoxDecoration(border: showDivider ? const Border(bottom: BorderSide(color: AppColors.lineSoft)) : null),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.soft : null,
+          border: showDivider ? const Border(bottom: BorderSide(color: AppColors.lineSoft)) : null,
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

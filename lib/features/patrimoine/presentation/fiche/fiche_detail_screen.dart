@@ -14,18 +14,42 @@ import '../patrimoine_providers.dart';
 import '../shared/async_state_views.dart';
 import '../shared/patrimoine_widgets.dart';
 
-/// Fiche complète d'un bien + formulaire de validation du comptage.
-/// Poussée en plein écran (route modale) depuis Accueil, Scanner ou Historique.
-class FicheDetailScreen extends ConsumerStatefulWidget {
+/// Fiche complète d'un bien + formulaire de validation du comptage —
+/// poussée en plein écran (route modale) depuis Accueil, Scanner ou
+/// Historique sur téléphone. Enveloppe fine autour de [FicheDetailContent].
+class FicheDetailScreen extends StatelessWidget {
   const FicheDetailScreen({super.key, required this.immobilisationId});
 
   final String immobilisationId;
 
   @override
-  ConsumerState<FicheDetailScreen> createState() => _FicheDetailScreenState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(child: FicheDetailContent(immobilisationId: immobilisationId)),
+    );
+  }
 }
 
-class _FicheDetailScreenState extends ConsumerState<FicheDetailScreen> {
+/// Contenu réutilisable de la fiche détail — sans chrome `Scaffold`/`SafeArea`
+/// propre, pour pouvoir être affiché à la fois en plein écran (téléphone,
+/// via [FicheDetailScreen]) et en panneau de droite d'un layout
+/// maître-détail (tablette, Scanner/Historique — CLAUDE.md, pas de
+/// duplication du widget).
+///
+/// [onFerme] : `null` en plein écran (le bouton fermer et la validation
+/// réussie font un `Navigator.pop`) ; fourni en panneau tablette pour
+/// désélectionner le bien affiché à la place de naviguer.
+class FicheDetailContent extends ConsumerStatefulWidget {
+  const FicheDetailContent({super.key, required this.immobilisationId, this.onFerme});
+
+  final String immobilisationId;
+  final VoidCallback? onFerme;
+
+  @override
+  ConsumerState<FicheDetailContent> createState() => _FicheDetailContentState();
+}
+
+class _FicheDetailContentState extends ConsumerState<FicheDetailContent> {
   EtatBien? _etat;
   String? _siteId;
   String? _local;
@@ -34,9 +58,31 @@ class _FicheDetailScreenState extends ConsumerState<FicheDetailScreen> {
   bool _envoi = false;
 
   @override
+  void didUpdateWidget(covariant FicheDetailContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.immobilisationId != widget.immobilisationId) {
+      // Panneau tablette : un autre bien a été sélectionné sans reconstruire
+      // le State (même clé de widget) — repart d'un formulaire vierge.
+      _etat = null;
+      _siteId = null;
+      _local = null;
+      _affectataire = null;
+      _noteController.clear();
+    }
+  }
+
+  @override
   void dispose() {
     _noteController.dispose();
     super.dispose();
+  }
+
+  void _fermer() {
+    if (widget.onFerme != null) {
+      widget.onFerme!();
+    } else {
+      Navigator.of(context).maybePop();
+    }
   }
 
   void _initSiNecessaire(ImmobilisationModel immo, ComptageModel? deja) {
@@ -79,7 +125,7 @@ class _FicheDetailScreenState extends ConsumerState<FicheDetailScreen> {
             ResultatInventaire.ecart => 'Écart enregistré',
           },
         )));
-        Navigator.of(context).maybePop();
+        _fermer();
       }
     } finally {
       if (mounted) setState(() => _envoi = false);
@@ -92,42 +138,39 @@ class _FicheDetailScreenState extends ConsumerState<FicheDetailScreen> {
     final registryAsync = ref.watch(patrimoineRegistryProvider);
     final sessionAsync = ref.watch(comptagesSessionProvider);
 
-    return Scaffold(
-      body: SafeArea(
-        child: immoAsync.when(
+    return immoAsync.when(
+      loading: () => const LoadingView(),
+      error: (e, st) => ErrorView(message: '$e', onRetry: () => ref.invalidate(immobilisationProvider(widget.immobilisationId))),
+      data: (immo) => registryAsync.when(
+        loading: () => const LoadingView(),
+        error: (e, st) => ErrorView(message: '$e'),
+        data: (registry) => sessionAsync.when(
           loading: () => const LoadingView(),
-          error: (e, st) => ErrorView(message: '$e', onRetry: () => ref.invalidate(immobilisationProvider(widget.immobilisationId))),
-          data: (immo) => registryAsync.when(
-            loading: () => const LoadingView(),
-            error: (e, st) => ErrorView(message: '$e'),
-            data: (registry) => sessionAsync.when(
-              loading: () => const LoadingView(),
-              error: (e, st) => ErrorView(message: '$e'),
-              data: (session) {
-                final deja = session.where((c) => c.immobilisationId == immo.id).firstOrNull;
-                _initSiNecessaire(immo, deja);
-                return _FicheBody(
-                  immo: immo,
-                  sites: registry.sites,
-                  deja: deja,
-                  etat: _etat!,
-                  siteId: _siteId!,
-                  local: _local!,
-                  affectataire: _affectataire!,
-                  noteController: _noteController,
-                  envoi: _envoi,
-                  onEtatChange: (v) => setState(() => _etat = v),
-                  onLieuChange: (site, local) => setState(() {
-                    _siteId = site;
-                    _local = local;
-                  }),
-                  onAffectataireChange: (v) => setState(() => _affectataire = v),
-                  onValider: () => _valider(immo),
-                  onIntrouvable: () => _valider(immo, force: ResultatInventaire.introuvable),
-                );
-              },
-            ),
-          ),
+          error: (e, st) => ErrorView(message: '$e'),
+          data: (session) {
+            final deja = session.where((c) => c.immobilisationId == immo.id).firstOrNull;
+            _initSiNecessaire(immo, deja);
+            return _FicheBody(
+              immo: immo,
+              sites: registry.sites,
+              deja: deja,
+              etat: _etat!,
+              siteId: _siteId!,
+              local: _local!,
+              affectataire: _affectataire!,
+              noteController: _noteController,
+              envoi: _envoi,
+              onFermer: _fermer,
+              onEtatChange: (v) => setState(() => _etat = v),
+              onLieuChange: (site, local) => setState(() {
+                _siteId = site;
+                _local = local;
+              }),
+              onAffectataireChange: (v) => setState(() => _affectataire = v),
+              onValider: () => _valider(immo),
+              onIntrouvable: () => _valider(immo, force: ResultatInventaire.introuvable),
+            );
+          },
         ),
       ),
     );
@@ -145,6 +188,7 @@ class _FicheBody extends ConsumerWidget {
     required this.affectataire,
     required this.noteController,
     required this.envoi,
+    required this.onFermer,
     required this.onEtatChange,
     required this.onLieuChange,
     required this.onAffectataireChange,
@@ -161,6 +205,7 @@ class _FicheBody extends ConsumerWidget {
   final String affectataire;
   final TextEditingController noteController;
   final bool envoi;
+  final VoidCallback onFermer;
   final ValueChanged<EtatBien> onEtatChange;
   final void Function(String siteId, String local) onLieuChange;
   final ValueChanged<String> onAffectataireChange;
@@ -189,7 +234,7 @@ class _FicheBody extends ConsumerWidget {
           child: Row(
             children: [
               IconButton(
-                onPressed: () => Navigator.of(context).maybePop(),
+                onPressed: onFermer,
                 icon: const Icon(Icons.close_rounded, size: 18),
                 style: IconButton.styleFrom(backgroundColor: AppColors.sunken, foregroundColor: AppColors.ink2),
               ),
