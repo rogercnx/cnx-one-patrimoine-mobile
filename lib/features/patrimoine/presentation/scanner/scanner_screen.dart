@@ -23,14 +23,23 @@ class ScannerScreen extends ConsumerStatefulWidget {
 }
 
 class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindingObserver {
-  final _controller = MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates);
+  // `autoStart: false` — on gère nous-mêmes la permission caméra avant de
+  // démarrer (voir [_initialiserCamera]). En la laissant à mobile_scanner
+  // seul, une `SecurityException` native (permission refusée) est parfois
+  // remontée comme "aucune caméra disponible" plutôt que "permission
+  // refusée" (le plugin catch toute exception de `bindToLifecycle` de la
+  // même façon) — on évite ce cas en ne démarrant jamais sans permission
+  // confirmée nous-mêmes via `permission_handler`.
+  final _controller = MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates, autoStart: false);
   final _codeController = TextEditingController();
   String? _erreurSaisie;
   bool _busy = false;
-  // Cause réelle de l'échec de démarrage caméra (permission refusée, pas de
-  // caméra sur l'appareil, autre) — remplace un simple booléen pour pouvoir
-  // proposer la bonne action de récupération (CLAUDE.md : jamais de message
-  // technique brut, mais ici on distingue au moins les 2 cas récupérables).
+  bool _verificationEnCours = true;
+  bool _permissionRefusee = false;
+  bool _permissionDefinitivementRefusee = false;
+  // Erreur remontée par mobile_scanner *après* permission confirmée
+  // accordée — à ce stade, une erreur ici est fiable (pas de caméra, ou
+  // autre problème matériel réel).
   MobileScannerException? _erreurCamera;
   // `true` uniquement pendant qu'on est revenu depuis les réglages système
   // (voir [didChangeAppLifecycleState]) — évite de retenter en boucle.
@@ -46,6 +55,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _initialiserCamera();
   }
 
   @override
@@ -63,14 +73,38 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     // accordée entre-temps — on retente une seule fois automatiquement.
     if (state == AppLifecycleState.resumed && _reprisePermissionEnCours) {
       _reprisePermissionEnCours = false;
-      _reessayerCamera();
+      _initialiserCamera();
     }
   }
 
-  Future<void> _reessayerCamera() async {
-    setState(() => _erreurCamera = null);
+  /// Vérifie/demande la permission caméra nous-mêmes, puis ne démarre
+  /// `MobileScannerController` que si elle est effectivement accordée.
+  Future<void> _initialiserCamera() async {
+    setState(() => _verificationEnCours = true);
+    var status = await ph.Permission.camera.status;
+    if (status.isDenied) {
+      status = await ph.Permission.camera.request();
+    }
+    if (!mounted) return;
+    if (status.isGranted || status.isLimited) {
+      setState(() {
+        _verificationEnCours = false;
+        _permissionRefusee = false;
+      });
+      await _demarrerCamera();
+    } else {
+      setState(() {
+        _verificationEnCours = false;
+        _permissionRefusee = true;
+        _permissionDefinitivementRefusee = status.isPermanentlyDenied;
+      });
+    }
+  }
+
+  Future<void> _demarrerCamera() async {
     try {
       await _controller.start();
+      if (mounted) setState(() => _erreurCamera = null);
     } on MobileScannerException catch (e) {
       if (mounted) setState(() => _erreurCamera = e);
     }
@@ -89,11 +123,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     setState(() => _busy = false);
     if (_tablette) {
       setState(() => _selectionId = id);
-      await _reessayerCamera();
+      await _demarrerCamera();
       return;
     }
     context.push('/fiche/$id').then((_) {
-      if (mounted) _reessayerCamera();
+      if (mounted) _demarrerCamera();
     });
   }
 
@@ -175,15 +209,19 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
           controller: _controller,
           busy: _busy,
           campagneRef: registry.campagne.reference,
+          verification: _verificationEnCours,
+          permissionRefusee: _permissionRefusee,
           erreur: _erreurCamera,
           onErreur: (e) => setState(() => _erreurCamera = e),
           onDetect: _onDetect,
         ),
-        if (_erreurCamera != null) ...[
+        if (!_verificationEnCours && (_permissionRefusee || _erreurCamera != null)) ...[
           const SizedBox(height: 10),
           _MessageErreurCamera(
-            erreur: _erreurCamera!,
-            onReessayer: _reessayerCamera,
+            permissionRefusee: _permissionRefusee,
+            permissionDefinitivementRefusee: _permissionDefinitivementRefusee,
+            erreur: _erreurCamera,
+            onReessayer: _initialiserCamera,
             onOuvrirReglages: _ouvrirReglagesSysteme,
           ),
         ],
@@ -262,36 +300,50 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
 }
 
 /// Message + action de récupération selon la vraie cause de l'échec caméra
-/// — jamais de message technique brut (CLAUDE.md), mais on distingue les
-/// deux cas réellement récupérables par l'utilisateur.
+/// — jamais de message technique brut (CLAUDE.md). La permission est
+/// vérifiée nous-mêmes (voir [_ScannerScreenState._initialiserCamera]),
+/// donc [erreur] (remontée par mobile_scanner) ne survient qu'une fois la
+/// permission confirmée accordée — c'est donc fiable à ce stade (vraiment
+/// pas de caméra, ou autre souci matériel).
 class _MessageErreurCamera extends StatelessWidget {
-  const _MessageErreurCamera({required this.erreur, required this.onReessayer, required this.onOuvrirReglages});
+  const _MessageErreurCamera({
+    required this.permissionRefusee,
+    required this.permissionDefinitivementRefusee,
+    required this.erreur,
+    required this.onReessayer,
+    required this.onOuvrirReglages,
+  });
 
-  final MobileScannerException erreur;
+  final bool permissionRefusee;
+  final bool permissionDefinitivementRefusee;
+  final MobileScannerException? erreur;
   final VoidCallback onReessayer;
   final VoidCallback onOuvrirReglages;
 
   @override
   Widget build(BuildContext context) {
-    final permissionRefusee = erreur.errorCode == MobileScannerErrorCode.permissionDenied;
+    final String message;
+    if (permissionRefusee) {
+      message = permissionDefinitivementRefusee
+          ? "Accès à la caméra refusé définitivement. Autorisez-le dans les réglages du téléphone pour scanner un QR code — la saisie manuelle ci-dessous reste disponible en attendant."
+          : "Accès à la caméra refusé. Autorisez-le pour scanner un QR code — la saisie manuelle ci-dessous reste disponible en attendant.";
+    } else {
+      message = "Aucune caméra disponible sur cet appareil — utilisez la saisie manuelle ci-dessous.";
+    }
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(color: AppColors.warnBg, borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            permissionRefusee
-                ? "Accès à la caméra refusé. Autorisez-le dans les réglages pour scanner un QR code — la saisie manuelle ci-dessous reste disponible en attendant."
-                : "Aucune caméra disponible sur cet appareil — utilisez la saisie manuelle ci-dessous.",
-            style: const TextStyle(fontSize: 11.5, color: Color(0xFF8A6412), fontWeight: FontWeight.w600),
-          ),
+          Text(message, style: const TextStyle(fontSize: 11.5, color: Color(0xFF8A6412), fontWeight: FontWeight.w600)),
           if (permissionRefusee) ...[
             const SizedBox(height: 8),
             Row(
               children: [
-                TextButton(onPressed: onReessayer, child: const Text('Réessayer', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
-                const SizedBox(width: 4),
+                if (!permissionDefinitivementRefusee)
+                  TextButton(onPressed: onReessayer, child: const Text('Réessayer', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
                 TextButton(onPressed: onOuvrirReglages, child: const Text('Ouvrir les réglages', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
               ],
             ),
@@ -356,14 +408,27 @@ class _Title extends StatelessWidget {
 }
 
 class _Viseur extends StatelessWidget {
-  const _Viseur({required this.controller, required this.busy, required this.campagneRef, required this.erreur, required this.onErreur, required this.onDetect});
+  const _Viseur({
+    required this.controller,
+    required this.busy,
+    required this.campagneRef,
+    required this.verification,
+    required this.permissionRefusee,
+    required this.erreur,
+    required this.onErreur,
+    required this.onDetect,
+  });
 
   final MobileScannerController controller;
   final bool busy;
   final String campagneRef;
+  final bool verification;
+  final bool permissionRefusee;
   final MobileScannerException? erreur;
   final ValueChanged<MobileScannerException> onErreur;
   final void Function(BarcodeCapture) onDetect;
+
+  bool get _camerAffichable => !verification && !permissionRefusee && erreur == null;
 
   @override
   Widget build(BuildContext context) {
@@ -375,7 +440,9 @@ class _Viseur extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             Container(color: const Color(0xFF16120F)),
-            if (erreur == null)
+            if (verification)
+              const Center(child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+            else if (_camerAffichable)
               MobileScanner(
                 controller: controller,
                 onDetect: onDetect,
@@ -387,12 +454,12 @@ class _Viseur extends StatelessWidget {
             else
               Center(
                 child: Icon(
-                  erreur!.errorCode == MobileScannerErrorCode.permissionDenied ? Icons.no_photography_outlined : Icons.videocam_off_outlined,
+                  permissionRefusee ? Icons.no_photography_outlined : Icons.videocam_off_outlined,
                   size: 32,
                   color: Colors.white.withValues(alpha: 0.6),
                 ),
               ),
-            if (erreur == null) ...[
+            if (_camerAffichable) ...[
               IgnorePointer(
                 child: Container(
                   decoration: BoxDecoration(
